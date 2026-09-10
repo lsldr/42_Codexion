@@ -1,32 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.h                                         :+:      :+:    :+:   */
+/*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/10 11:27:21 by asuleime         ###   ########.fr       */
+/*   Created: 2026/09/10 11:27:58 by asuleime          #+#    #+#             */
+/*   Updated: 2026/09/10 14:45:20 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <pthread.h>
-#include <string.h>
-#include <time.h>
-#include <stdio.h>
-#include <string.h>
+#include "codexion.h"
 
-typedef struct s_pargs
+int	parse_args(char **argv, t_pargs *args_p)
 {
-	unsigned int	n_coders;
-	unsigned int	burnout_t;
-	unsigned int	compile_t;
-	unsigned int	debug_t;
-	unsigned int	refactor_t;
-	unsigned int	req_compiles;
-	unsigned int	d_cooldown;
-	char			*scheduler;
-}	t_pargs;
+	unsigned int	i;
 
-int		parse_args(char **argv, t_pargs *args_p);
+	i = 0;
+	if (strcmp(argv[8], "fifo") != 0 && strcmp(argv[8], "edf") != 0)
+		return (fprintf(stderr, "Scheduler must be set to 'fifo' or 'edf'.\n") \
+				, 1);
+	while (++i < 8)
+	{
+		if (!verify_uint(argv, i)
+				return (1);
+	}
+	return 0;
+}
