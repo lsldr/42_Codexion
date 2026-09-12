@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 14:42:25 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/10 15:16:28 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/12 11:07:47 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,32 +25,20 @@ unsigned long	ft_strtoul(char *s, int s_len)
 	return (ul);
 }
 
-int is_uint(char *s)
+int	check_uint(char **argv, int i)
 {
-	int				i;
-	int				len;
-	unsigned char	c;
-	unsigned int	s_ul;
+	char			*raw_str;
+	int				j;
+	unsigned long	s_ul;
 
-	i = -1;
-	len = strlen(s);
-	if (len > 10)
+	raw_str = argv[i];
+	j = strlen(raw_str);
+	s_ul = 0;
+	while (--j > -1)
+		if (raw_str[j] < 48 || raw_str[j] > 57)
+			return (0);
+	s_ul = ft_strtoul(raw_str);
+	if (s_ul >> 32)
 		return (0);
-	while (++i < len)
-	{
-		c = (unsigned char)*(s + i);
-		if (c < 48 || c > 57)
-			return (0);
-	}
-	s_ul = ft_strtoul(s, len);
-}
-
-int	verify_uint(char **argv, int i)
-{
-	char	*raw_str;
-
-	raw_str = *(argv + i);
-	if (!is_uint(raw_str):
-			return (0);
 	return (1);
 }

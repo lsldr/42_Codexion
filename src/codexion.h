@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/10 11:27:21 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/12 11:23:11 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,18 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+
+enum
+{
+	N_CODERS = 1,
+	BURNOUT_T,
+	COMPILE_T,
+	DEBUG_T,
+	REFACTOR_T,
+	REQ_COMPILES,
+	D_COOLDOWN,
+	SCHEDULER
+};
 
 typedef struct s_pargs
 {
