@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 11:23:11 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/12 16:07:43 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,19 +17,25 @@
 #include <stdio.h>
 #include <string.h>
 
-enum
+typedef enum e_scheduler
 {
-	N_CODERS = 1,
-	BURNOUT_T,
-	COMPILE_T,
-	DEBUG_T,
-	REFACTOR_T,
-	REQ_COMPILES,
-	D_COOLDOWN,
-	SCHEDULER
-};
+	EDF,
+	FIFO
+}	t_scheduler;
 
-typedef struct s_pargs
+/*typedef enum e_npargs
+{
+	n_coders = 1,
+	burnout_t,
+	compile_t,
+	debug_t,
+	refactor_t,
+	req_compiles,
+	d_cooldown
+}	t_npargs; */
+
+// All "*_t" fields and d_cooldown represent number of milliseconds
+typedef struct s_data
 {
 	unsigned int	n_coders;
 	unsigned int	burnout_t;
@@ -38,7 +44,13 @@ typedef struct s_pargs
 	unsigned int	refactor_t;
 	unsigned int	req_compiles;
 	unsigned int	d_cooldown;
-	char			*scheduler;
-}	t_pargs;
+	t_scheduler		scheduler;
+}	t_data;
 
-int		parse_args(char **argv, t_pargs *args_p);
+int				parse_args(char **argv, t_data *data);
+int				check_uint(char **argv, int i);
+
+unsigned long	ft_strtoul(char *s, int s_len);
+unsigned int	ft_strtoui(char *s, int s_len);
+int				fill_npargs(char **argv, t_data *data);
+void			nparg_router(unsigned int *ui_arg, int i, t_data *data);

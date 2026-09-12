@@ -9,8 +9,9 @@ SRC_DIR :=  src
 OBJ_DIR :=  obj
 
 SRC     := main.c \
-            $(SRC_DIR)/parse_argv.c \
-            $(SRC_DIR)/is_uint.c
+            $(SRC_DIR)/parse_args.c \
+            $(SRC_DIR)/check_uint.c \
+			$(SRC_DIR)/strto_num.c
 
 OBJ     := $(SRC:%.c=$(OBJ_DIR)/%.o)
 
@@ -31,10 +32,10 @@ $(OBJ_DIR)/%.o: %.c $(HEADER)
 
 
 clean:
-		rm -rf $(OBJ_DIR)
+		@rm -rf $(OBJ_DIR)
 
 fclean: clean
-		rm -f $(NAME)
+		@rm -f $(NAME)
 
 re: fclean all
 
