@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 16:07:43 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/12 17:32:45 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,16 +23,17 @@ typedef enum e_scheduler
 	FIFO
 }	t_scheduler;
 
-/*typedef enum e_npargs
+typedef struct s_dongle
 {
-	n_coders = 1,
-	burnout_t,
-	compile_t,
-	debug_t,
-	refactor_t,
-	req_compiles,
-	d_cooldown
-}	t_npargs; */
+	pthread_mutex_t	*d_mutex;
+}	t_dongle;
+
+typedef struct s_coder
+{
+	unsigned short	coder_num;
+	t_dongle		*l_dongle;
+	t_dongle		*r_dongle;
+}	t_coder;
 
 // All "*_t" fields and d_cooldown represent number of milliseconds
 typedef struct s_data
@@ -45,6 +46,9 @@ typedef struct s_data
 	unsigned int	req_compiles;
 	unsigned int	d_cooldown;
 	t_scheduler		scheduler;
+	pthread_mutex_t	*log_mutex;
+	t_coder			*coders;
+	t_dongle		*dongles;
 }	t_data;
 
 int				parse_args(char **argv, t_data *data);
@@ -52,5 +56,9 @@ int				check_uint(char **argv, int i);
 
 unsigned long	ft_strtoul(char *s, int s_len);
 unsigned int	ft_strtoui(char *s, int s_len);
+
 int				fill_npargs(char **argv, t_data *data);
 void			nparg_router(unsigned int *ui_arg, int i, t_data *data);
+
+void			codexion(t_data *data);
+void			init_coders(t_data *data);

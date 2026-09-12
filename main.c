@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:06:26 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 16:27:08 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/12 16:31:43 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,6 @@ int	main(int argc, char **argv)
 		return (fprintf(stderr, "8 arguments must be passed.\n"), 1);
 	if (parse_args(argv, data))
 		return (fprintf(stderr, "Invalid arguments.\n"), 1);
+	codexion(data);
 	return (0);
 }
