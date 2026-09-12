@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:27:58 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 16:14:20 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/12 18:35:33 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	fill_npargs(char **argv, t_data *data)
 	ui_arg = ft_strtoui(argv[i], strlen(argv[i]));
 	if (ui_arg > 300)
 		return (fprintf(stderr, "Only <=300 coders accepted.\n"), 1);
-	data->n_coders = ui_arg;
+	data->n_coders = (unsigned short)ui_arg;
 	while (++i < 8)
 	{
 		ui_arg = ft_strtoui(argv[i], strlen(argv[i]));

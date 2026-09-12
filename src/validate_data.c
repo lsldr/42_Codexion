@@ -1,20 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.c                                         :+:      :+:    :+:   */
+/*   validate_data.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/12 16:31:55 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 18:49:49 by asuleime         ###   ########.fr       */
+/*   Created: 2026/09/12 18:50:55 by asuleime          #+#    #+#             */
+/*   Updated: 2026/09/12 18:53:56 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	codexion(t_data *data)
+bool	validate_data(t_data *data)
 {
-	init_coders(data);
-	validate_data(data);
-	init_threads(data);
+	if (!data->log_mutex || !&data->state_mutex)
+		return (false);
+	if (!data->dongles || !data->coders)
+		return (false);
+	return (true);
 }

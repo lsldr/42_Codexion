@@ -1,20 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.c                                         :+:      :+:    :+:   */
+/*   init_threads.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/12 16:31:55 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 18:49:49 by asuleime         ###   ########.fr       */
+/*   Created: 2026/09/12 18:55:03 by asuleime          #+#    #+#             */
+/*   Updated: 2026/09/12 18:59:02 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	codexion(t_data *data)
+void	init_threads(t_data *data, coder_routine *routine)
 {
-	init_coders(data);
-	validate_data(data);
-	init_threads(data);
+	int			i;
+	pthread_t	*threads;
+
+	i = -1;
+	threads = malloc(sizeof(pthread_t) * data->n_coders);
+	while (++i < data->n_coders)
+	{
+		if (pthread_create(&threads[i], NULL, routine, &data->coders[i]) != 0)
+			return (perror("Failed to create thread"));
+	}
 }

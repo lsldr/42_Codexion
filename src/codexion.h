@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 17:32:45 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/12 18:58:01 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef enum e_scheduler
 {
@@ -38,7 +39,7 @@ typedef struct s_coder
 // All "*_t" fields and d_cooldown represent number of milliseconds
 typedef struct s_data
 {
-	unsigned int	n_coders;
+	unsigned short	n_coders;
 	unsigned int	burnout_t;
 	unsigned int	compile_t;
 	unsigned int	debug_t;
@@ -49,6 +50,8 @@ typedef struct s_data
 	pthread_mutex_t	*log_mutex;
 	t_coder			*coders;
 	t_dongle		*dongles;
+	bool			is_finished;
+	pthread_mutex_t	state_mutex;
 }	t_data;
 
 int				parse_args(char **argv, t_data *data);
@@ -57,8 +60,8 @@ int				check_uint(char **argv, int i);
 unsigned long	ft_strtoul(char *s, int s_len);
 unsigned int	ft_strtoui(char *s, int s_len);
 
-int				fill_npargs(char **argv, t_data *data);
-void			nparg_router(unsigned int *ui_arg, int i, t_data *data);
-
 void			codexion(t_data *data);
 void			init_coders(t_data *data);
+bool			validate_data(t_data *data);
+
+void			coder_routine(void *arg);
