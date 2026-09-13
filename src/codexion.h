@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 18:58:01 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/13 12:02:38 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ typedef struct s_data
 	t_dongle		*dongles;
 	bool			is_finished;
 	pthread_mutex_t	state_mutex;
+	pthread_t		*threads;
 }	t_data;
 
 int				parse_args(char **argv, t_data *data);

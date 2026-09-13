@@ -1,8 +1,11 @@
 # VS Code
-.vscode/*
+.vscode/
 
 # codexion binary
 codexion
+
+# /obj directory
+obj/
 
 # Prerequisites
 *.d
