@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/13 15:21:31 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/13 16:48:32 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@ typedef struct s_pqueue
 	t_scheduler		*pq_type;
 	t_coder			*front_coder;
 	t_coder			*back_coder;
-}	t_pair_queue;
+}	t_pqueue;
 
 typedef struct s_dongle
 {
 	pthread_mutex_t	*d_mutex;
 	t_pqueue		*pqueue;
-	unsigned int	request_time;
+	unsigned int	request_t;
 }	t_dongle;
 
 typedef struct s_coder
@@ -51,8 +51,11 @@ typedef struct s_coder
 typedef struct s_monitor
 {
 	pthread_t		*thr;
+	bool			is_end;
+	pthread_mutex_t	end_mutex;
 	pthread_cond_t	*bo_cond;
-	pthread_cond_t	*ncc_cond;
+	pthread_cond_t	*rcc_cond;
+	t_coder			*coders;
 }	t_monitor;
 
 // All "*_t" fields and d_cooldown represent number of milliseconds
@@ -66,12 +69,10 @@ typedef struct s_data
 	unsigned int	req_compiles;
 	unsigned int	d_cooldown;
 	t_scheduler		scheduler;
-	t_monitor		*pool_monitor;
+	t_monitor		*monitor;
 	pthread_mutex_t	*log_mutex;
 	t_coder			*coders;
 	t_dongle		*dongles;
-	bool			is_finished;
-	pthread_mutex_t	*state_mutex;
 }	t_data;
 
 int				parse_args(char **argv, t_data *data);

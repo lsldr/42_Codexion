@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/13 11:30:12 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/13 16:53:39 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,11 @@ void	malloc_set_dongles(t_data *data)
 	{
 		data->dongles[i].d_mutex = malloc(sizeof(pthread_mutex_t));
 		if (!data->dongles[i].d_mutex)
-			return ;
+			return (fprintf(stderr, "Dongle mutex malloc failed.\n"));
 		pthread_mutex_init(data->dongles[i].d_mutex, NULL);
+		data->dongles[i].pqueue = malloc(sizeof(t_pqueue));
+		if (!data->dongles[i].pqueue)
+			return (fprintf("Priority queue malloc failed.\n"));
 	}
 }
 
