@@ -6,20 +6,31 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/13 16:53:39 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/14 11:39:00 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	malloc_coders(t_data *data)
+void	init_coders(t_data *data)
 {
+	int		i;
+
+	i = -1;
 	data->coders = malloc(sizeof(t_coder) * data->n_coders);
 	if (!data->coders)
 		return ;
+	while (++i < data->n_coders)
+	{
+		data->coders[i].coder_num = i + 1;
+		data->coders[i].cc_count = 0;
+		data->coders[i].data = data;
+		pthread_cond_init(data->coders[i].cond, NULL);
+		data->coders[i].last_cc_ts = 0;
+	}
 }
 
-void	malloc_set_dongles(t_data *data)
+void	init_dongles(t_data *data)
 {
 	int	i;
 
@@ -33,22 +44,14 @@ void	malloc_set_dongles(t_data *data)
 		if (!data->dongles[i].d_mutex)
 			return (fprintf(stderr, "Dongle mutex malloc failed.\n"));
 		pthread_mutex_init(data->dongles[i].d_mutex, NULL);
-		data->dongles[i].pqueue = malloc(sizeof(t_pqueue));
-		if (!data->dongles[i].pqueue)
+		data->dongles[i].queue = malloc(sizeof(t_pqueue));
+		if (!data->dongles[i].queue)
 			return (fprintf("Priority queue malloc failed.\n"));
 	}
 }
 
-void	malloc_init_logmutex(t_data *data)
-{
-	data->log_mutex = malloc(sizeof(pthread_mutex_t));
-	if (!data->log_mutex)
-		return ;
-}
-
 void	assign_dongles(t_data *data)
 {
-	t_coder	*coder;
 	int		i;
 
 	i = -1;
@@ -61,10 +64,28 @@ void	assign_dongles(t_data *data)
 	}
 }
 
-void	init_coders(t_data *data)
+void	init_queues(t_data *data)
 {
-	malloc_coders(data);
-	malloc_set_dongles(data);
-	malloc_init_logmutex(data);
+	t_pqueue	*q;
+	int			i;
+
+	i = data->n_coders;
+	while (--i > 0)
+	{
+		q = data->dongles[i].queue;
+		q->front_coder = &(data->coders[i]);
+		q->back_coder = &(data->coders[(i + 1) % data->n_coders];
+	}
+	q = data->dongles[i].queue;
+	q->front_coder = &(data->coders[i]);
+	q->back_coder = &(data->coders[data->n_coders - 1];
+	q = NULL;
+}
+
+void	init_ds(t_data *data)
+{
+	init_coders(data);
+	init_dongles(data);
 	assign_dongles(data);
+	init_queues(data);
 }

@@ -6,26 +6,26 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:27:58 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/12 18:35:33 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/14 10:58:56 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	nparg_router(unsigned int *ui_arg, int i, t_data *data)
+void	nparg_router(unsigned int ui_arg, int i, t_data *data)
 {
 	if (i == 2)
-		data->burnout_t = *ui_arg;
+		data->burnout_t = ui_arg;
 	if (i == 3)
-		data->compile_t = *ui_arg;
+		data->compile_t = ui_arg;
 	if (i == 4)
-		data->debug_t = *ui_arg;
+		data->debug_t = ui_arg;
 	if (i == 5)
-		data->refactor_t = *ui_arg;
+		data->refactor_t = ui_arg;
 	if (i == 6)
-		data->req_compiles = *ui_arg;
+		data->req_compiles = ui_arg;
 	if (i == 7)
-		data->d_cooldown = *ui_arg;
+		data->d_cooldown = ui_arg;
 	return ;
 }
 
@@ -42,7 +42,7 @@ int	fill_npargs(char **argv, t_data *data)
 	while (++i < 8)
 	{
 		ui_arg = ft_strtoui(argv[i], strlen(argv[i]));
-		nparg_router(&ui_arg, i, data);
+		nparg_router(ui_arg, i, data);
 	}
 	return (0);
 }
