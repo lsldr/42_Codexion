@@ -6,13 +6,13 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 18:50:55 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/13 16:44:58 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/14 11:51:50 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-bool	validate_data(t_data *data)
+bool	check_data(t_data *data)
 {
 	if (!data->log_mutex)
 		return (fprintf(stderr, "Log mutex init error.\n"), false);

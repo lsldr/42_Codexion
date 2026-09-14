@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/14 11:39:00 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/14 12:02:26 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,15 @@ void	init_coders(t_data *data)
 	i = -1;
 	data->coders = malloc(sizeof(t_coder) * data->n_coders);
 	if (!data->coders)
-		return ;
+		return (fprintf(stderr, "Coders malloc failed.\n");
 	while (++i < data->n_coders)
 	{
 		data->coders[i].coder_num = i + 1;
 		data->coders[i].cc_count = 0;
 		data->coders[i].data = data;
+		data->coders[i].cond = malloc(sizeof(pthread_cond_t));
+		if (!data->coders[i].cond)
+			return (fprintf(stderr, "Pthread cond malloc failed.\n");
 		pthread_cond_init(data->coders[i].cond, NULL);
 		data->coders[i].last_cc_ts = 0;
 	}
@@ -37,7 +40,7 @@ void	init_dongles(t_data *data)
 	i = -1;
 	data->dongles = malloc(sizeof(t_dongle) * data->n_coders);
 	if (!data->dongles)
-		return ;
+		return (fprintf(stderr, "Dongles malloc failed.\n");
 	while (++i < data->n_coders)
 	{
 		data->dongles[i].d_mutex = malloc(sizeof(pthread_mutex_t));
@@ -64,12 +67,14 @@ void	assign_dongles(t_data *data)
 	}
 }
 
-void	init_queues(t_data *data)
+void	set_queues(t_data *data)
 {
 	t_pqueue	*q;
 	int			i;
 
 	i = data->n_coders;
+	if (!data->dongles)
+		return ;
 	while (--i > 0)
 	{
 		q = data->dongles[i].queue;
@@ -87,5 +92,5 @@ void	init_ds(t_data *data)
 	init_coders(data);
 	init_dongles(data);
 	assign_dongles(data);
-	init_queues(data);
+	set_queues(data);
 }
