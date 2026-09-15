@@ -6,13 +6,13 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/15 11:01:44 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/15 12:13:10 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	*monitor_routine(void *arg)
+void	*m_routine(void *arg)
 {
 	return (NULL);
 }
