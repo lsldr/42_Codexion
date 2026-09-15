@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init_coders.c                                      :+:      :+:    :+:   */
+/*   init_ds.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/14 12:02:26 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/15 11:08:04 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,20 @@ void	init_coders(t_data *data)
 	i = -1;
 	data->coders = malloc(sizeof(t_coder) * data->n_coders);
 	if (!data->coders)
-		return (fprintf(stderr, "Coders malloc failed.\n");
+		return (fprintf(stderr, "Coders malloc failed.\n"));
 	while (++i < data->n_coders)
 	{
 		data->coders[i].coder_num = i + 1;
 		data->coders[i].cc_count = 0;
 		data->coders[i].data = data;
+		data->coders[i].thr = malloc(sizeof(pthread_t));
+		if (!data->coders[i].thr)
+			return (fprintf(stderr, "Coder pthread malloc failed\n"));
 		data->coders[i].cond = malloc(sizeof(pthread_cond_t));
 		if (!data->coders[i].cond)
-			return (fprintf(stderr, "Pthread cond malloc failed.\n");
+			return (fprintf(stderr, "Pthread cond malloc failed.\n"));
 		pthread_cond_init(data->coders[i].cond, NULL);
-		data->coders[i].last_cc_ts = 0;
+		data->coders[i].last_cc_t = 0;
 	}
 }
 
@@ -40,16 +43,16 @@ void	init_dongles(t_data *data)
 	i = -1;
 	data->dongles = malloc(sizeof(t_dongle) * data->n_coders);
 	if (!data->dongles)
-		return (fprintf(stderr, "Dongles malloc failed.\n");
+		return (fprintf(stderr, "Dongles malloc failed.\n"));
 	while (++i < data->n_coders)
 	{
-		data->dongles[i].d_mutex = malloc(sizeof(pthread_mutex_t));
-		if (!data->dongles[i].d_mutex)
+		data->dongles[i].mutex = malloc(sizeof(pthread_mutex_t));
+		if (!data->dongles[i].mutex)
 			return (fprintf(stderr, "Dongle mutex malloc failed.\n"));
-		pthread_mutex_init(data->dongles[i].d_mutex, NULL);
+		pthread_mutex_init(data->dongles[i].mutex, NULL);
 		data->dongles[i].queue = malloc(sizeof(t_pqueue));
 		if (!data->dongles[i].queue)
-			return (fprintf("Priority queue malloc failed.\n"));
+			return (fprintf(stderr, "Priority queue malloc failed.\n"));
 	}
 }
 
@@ -69,8 +72,8 @@ void	assign_dongles(t_data *data)
 
 void	set_queues(t_data *data)
 {
-	t_pqueue	*q;
-	int			i;
+	t_pqueue		*q;
+	unsigned short	i;
 
 	i = data->n_coders;
 	if (!data->dongles)
@@ -78,12 +81,12 @@ void	set_queues(t_data *data)
 	while (--i > 0)
 	{
 		q = data->dongles[i].queue;
-		q->front_coder = &(data->coders[i]);
-		q->back_coder = &(data->coders[(i + 1) % data->n_coders];
+		q->front_coder_num = i + 1;
+		q->back_coder_num = (i + 2) % data->n_coders;
 	}
 	q = data->dongles[i].queue;
-	q->front_coder = &(data->coders[i]);
-	q->back_coder = &(data->coders[data->n_coders - 1];
+	q->front_coder_num = i + 1;
+	q->back_coder_num = data->n_coders;
 	q = NULL;
 }
 
