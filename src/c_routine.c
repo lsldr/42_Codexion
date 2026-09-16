@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/15 12:12:39 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/16 10:29:04 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,4 +17,5 @@ void	*c_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
+	return (void *)coder;
 }

@@ -6,78 +6,86 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/15 12:14:46 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/16 20:03:47 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	init_coders(t_data *data)
+// last_cc_t to be set to data->start_t before launching
+int	init_coders(t_data *data)
 {
-	int		i;
-	t_coder	*coder;
+	int			i;
+	t_coder		*coder;
 
 	i = -1;
 	data->coders = malloc(sizeof(t_coder) * data->n_coders);
 	if (!data->coders)
-		return (fprintf(stderr, "Coders malloc failed.\n"));
+		return (fprintf(stderr, "Coders malloc failed.\n"), 1);
 	while (++i < data->n_coders)
 	{
 		coder = &(data->coders[i]);
 		coder->coder_num = i + 1;
-		pthread_mutex_init(&(coder->c_mutex), NULL);
-		pthread_cond_init(&(coder->cond), NULL);
 		coder->cc_count = 0;
 		coder->last_cc_t = 0;
 		coder->l_dongle = NULL;
 		coder->r_dongle = NULL;
 		coder->data = data;
+		pthread_mutex_init(&(coder->c_mutex), NULL);
+		pthread_cond_init(&(coder->cond), NULL);
 	}
+	return (0);
 }
 
-void	init_dongles(t_data *data)
+// Called in init_dongles() below
+int	assign_dongles(t_data *data)
 {
 	int	i;
 
 	i = -1;
-	data->dongles = malloc(sizeof(t_dongle) * data->n_coders);
-	if (!data->dongles)
-		return (fprintf(stderr, "Dongles malloc failed.\n"));
-	if (!data->coders)
-		return ;
 	while (++i < data->n_coders)
 	{
-		data->coders[i].l_dongle = &(data->dongles[i]);
-		data->coders[i].r_dongle = &(data->dongles[(i + 1) % data->n_coders]);
+		data->coders[i].l_dongle = &data->dongles[i];
+		if (data->n_coders > 1)
+			data->coders[i].r_dongle = &data->dongles[(i + 1) % data->n_coders];
+		else
+			data->coders[i].r_dongle = NULL;
 	}
-	init_queues(data);
+	return (0);
 }
 
-void	init_queues(t_data *data)
+int	init_dongles(t_data *data)
 {
-	return ;
-}
-
-void	init_threads(t_data *data)
-{
-	int		i;
-	t_coder	*coder;
+	int			i;
+	t_dongle	*d;
 
 	i = -1;
+	data->dongles = malloc(sizeof(t_dongle) * data->n_coders);
+	if (!data->dongles)
+		return (fprintf(stderr, "Dongles malloc failed.\n"), 1);
 	while (++i < data->n_coders)
-		pthread_create(data->coders[i].thr, NULL, c_routine, &data->coders[i]);
-	pthread_create(&data->monitor_thr, NULL, m_routine, data);
+	{
+		d = &data->dongles[i];
+		d->id = i + 1;
+		d->in_use = false;
+		d->avlb_at = 0;
+		d->queue.size = 0;
+		pthread_mutex_init(&d->mutex, NULL);
+	}
+	assign_dongles(data);
+	return (0);
 }
 
-void	init_ds(t_data *data)
+int	init_ds(t_data *data)
 {
 	data->start_t = 0;
 	data->is_end = false;
 	pthread_mutex_init(&data->end_mutex, NULL);
 	pthread_mutex_init(&data->log_mutex, NULL);
-	init_coders(data);
-	init_dongles(data);
-	if (!check_ds(data))
-		return (fprintf(stderr, "Data initialization failed.\n"));
-	init_threads(data);
+	if (init_coders(data))
+		return (1);
+	if (init_dongles(data))
+		return (2);
+	set_time(data);
+	return (0);
 }

@@ -1,28 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   codexion.c                                         :+:      :+:    :+:   */
+/*   init_threads.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/12 16:31:55 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/16 20:05:50 by asuleime         ###   ########.fr       */
+/*   Created: 2026/09/16 20:01:04 by asuleime          #+#    #+#             */
+/*   Updated: 2026/09/16 20:02:58 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	codexion(t_data *data)
+int	init_threads(t_data *data)
 {
-	int	i;
+	int		i;
+	t_coder	*coder;
 
 	i = -1;
-	if (init_ds(data))
-		return (clean_all(data), 1);
-	if (init_threads(data))
-		return (clean_all(data), 1);
 	while (++i < data->n_coders)
-		pthread_join(data->coders[i].thr, NULL);
-	pthread_join(data->monitor_thr, NULL);
-	clean_all(data);
+	{
+		coder = &data->coders[i];
+		if (pthread_create(&coder->thr, NULL, c_routine, coder) != 0)
+			return (fprintf(stderr, "Failed to create monitor thread\n"), 1);
+	}
+	if (pthread_create(&data->monitor_thr, NULL, m_routine, data) != 0)
+		return (fprintf(stderr, "Failed to create monitor thread\n"), 1);
+	return (0);
 }

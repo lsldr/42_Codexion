@@ -6,17 +6,20 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/15 12:13:20 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/16 20:05:40 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <pthread.h>
 #include <string.h>
-#include <time.h>
+#include <sys/time.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+
+typedef struct s_coder	t_coder;
+typedef struct s_data	t_data;
 
 // Scheduling policy: earliest deadline first || first-in-first-out
 typedef enum e_scheduler
@@ -94,8 +97,9 @@ unsigned long	ft_strtoul(char *s, int s_len);
 unsigned int	ft_strtoui(char *s, int s_len);
 
 void			codexion(t_data *data);
-void			init_ds(t_data *data);
-bool			check_ds(t_data *data);
+int				init_ds(t_data *data);
+
+void			set_time(t_data *data);
 
 void			*c_routine(void *arg);
 void			*m_routine(void *arg);
