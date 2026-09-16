@@ -6,20 +6,19 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/16 20:05:40 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/16 20:41:07 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
-#include <pthread.h>
-#include <string.h>
-#include <sys/time.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdbool.h>
+#ifndef CODEXION_H
+# define CODEXION_H
 
-typedef struct s_coder	t_coder;
-typedef struct s_data	t_data;
+# include <pthread.h>
+# include <stdbool.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <sys/time.h>
 
 // Scheduling policy: earliest deadline first || first-in-first-out
 typedef enum e_scheduler
@@ -27,6 +26,10 @@ typedef enum e_scheduler
 	EDF,
 	FIFO
 }	t_scheduler;
+
+
+// Forward declaration as there is a t_data * field in t_coder
+typedef struct s_data	t_data;
 
 typedef struct s_request
 {
@@ -91,15 +94,19 @@ typedef struct s_data
 int				parse_args(char **argv, t_data *data);
 int				check_uint(char **argv, int i);
 
-void			clean_all(t_data *data);
-
 unsigned long	ft_strtoul(char *s, int s_len);
 unsigned int	ft_strtoui(char *s, int s_len);
 
-void			codexion(t_data *data);
 int				init_ds(t_data *data);
+int				init_threads(t_data *data);
 
+void			clean_all(t_data *data);
+void			codexion(t_data *data);
+
+unsigned long	get_time_ms(void);
 void			set_time(t_data *data);
 
 void			*c_routine(void *arg);
 void			*m_routine(void *arg);
+
+#endif

@@ -20,15 +20,16 @@ SRC_DIR :=  src
 OBJ_DIR :=  obj
 
 SRC     := main.c \
-		   	$(SRC_DIR)/c_routine.c	\
-		    $(SRC_DIR)/check_ds.c	\
-		   	$(SRC_DIR)/check_uint.c \
-		   	$(SRC_DIR)/codexion.c	\
-			$(SRC_DIR)/init_ds.c	\
-			$(SRC_DIR)/init_ds2.c	\
-			$(SRC_DIR)/m_routine.c	\
-           	$(SRC_DIR)/parse_args.c \
-			$(SRC_DIR)/strto_num.c	\
+		   	$(SRC_DIR)/c_routine.c		\
+		   	$(SRC_DIR)/check_uint.c 	\
+			$(SRC_DIR)/clean_all.c		\
+		   	$(SRC_DIR)/codexion.c		\
+			$(SRC_DIR)/init_ds.c		\
+			$(SRC_DIR)/init_threads.c	\
+			$(SRC_DIR)/m_routine.c		\
+           	$(SRC_DIR)/parse_args.c 	\
+			$(SRC_DIR)/strto_num.c		\
+			$(SRC_DIR)/time_utils.c		\
 
 OBJ     := $(SRC:%.c=$(OBJ_DIR)/%.o)
 
