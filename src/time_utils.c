@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/16 20:23:50 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/16 20:50:17 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ unsigned long	get_time_ms(void)
 void	set_time(t_data *data)
 {
 	int		i;
-	t_coder	*coder;
 
 	i = -1;
 	data->start_t = get_time_ms();
