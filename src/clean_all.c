@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:50:30 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/15 11:54:22 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/17 08:14:52 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,10 @@ void	clean_all(t_data *data)
 		}
 		free(data->coders);
 	}
+	i = -1;
 	if (data->dongles)
 	{
-		while (--i > -1)
+		while (++i < data->n_coders)
 			pthread_mutex_destroy(&data->dongles[i].mutex);
 		free(data->dongles);
 	}

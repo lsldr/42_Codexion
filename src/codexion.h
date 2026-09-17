@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/16 20:41:07 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/17 10:48:10 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <sys/time.h>
+# include <unistd.h>
 
 // Scheduling policy: earliest deadline first || first-in-first-out
 typedef enum e_scheduler
@@ -27,32 +28,34 @@ typedef enum e_scheduler
 	FIFO
 }	t_scheduler;
 
-
 // Forward declaration as there is a t_data * field in t_coder
 typedef struct s_data	t_data;
 
 typedef struct s_request
 {
-	unsigned short	coder_num;	// The tie-breaker: lower value priority
-	unsigned long	key;		// Req time (FIFO) or deadline (EDF)
-	pthread_cond_t	*cond;		// A coder waits on this cond
-	bool			is_granted;
+	unsigned short	coder_num;	// The tie-breaker: lower value in priority
+	unsigned long	key;		// Request time (FIFO) or deadline (EDF)
+	pthread_cond_t	*cond;		// Points to coder->cond
 }	t_request;
 
 // Binary Min-Heap queue for each dongle
+// "pqueue" stands for "priority queue"
 typedef struct s_pqueue
 {
-	t_request		*items[4];
+	t_request		items[4];
 	int				size;
 }	t_pqueue;
 
+// All "_t" suffixes below are used to indicate time
+// Pthread type names also have it, 
+// but they are prepended with "pthread_"
 typedef struct s_dongle
 {
 	unsigned short	id;
 	pthread_mutex_t	mutex;
 	t_pqueue		queue;		// Priority queue
 	bool			in_use;
-	unsigned long	avlb_at;
+	unsigned long	free_t;		// Timestamp of when the dongle will be free
 }	t_dongle;
 
 typedef struct s_coder
@@ -71,42 +74,53 @@ typedef struct s_coder
 // All "*_t" fields and d_cooldown represent number of milliseconds
 typedef struct s_data
 {
+	// 8 program arguments from argv
 	unsigned short	n_coders;
 	unsigned int	burnout_t;
 	unsigned int	compile_t;
 	unsigned int	debug_t;
 	unsigned int	refactor_t;
-	unsigned int	req_compiles;
+	unsigned int	req_compiles;	// If 0, run until a burnout
 	unsigned int	d_cooldown;
 	t_scheduler		scheduler;
-
+	// Below are the fields created to manage the simulation
 	unsigned long	start_t;	// Start timestamp in ms
 	bool			is_end;
 	pthread_mutex_t	end_mutex;	// Protect is_end
 	pthread_mutex_t	log_mutex;	// Avoid interleaving messages
-
 	// The monitor thread checks coders' last_cc_t and cc_count
 	pthread_t		monitor_thr;
 	t_coder			*coders;
 	t_dongle		*dongles;
 }	t_data;
 
+// Program argument parsing and type checking functions
 int				parse_args(char **argv, t_data *data);
 int				check_uint(char **argv, int i);
 
+// String to unsigned numeric type conversion utils
 unsigned long	ft_strtoul(char *s, int s_len);
 unsigned int	ft_strtoui(char *s, int s_len);
 
+// Data structure and pthread initialization functions
 int				init_ds(t_data *data);
 int				init_threads(t_data *data);
 
+// Master cleaning and simulation functions
 void			clean_all(t_data *data);
 void			codexion(t_data *data);
 
+// Time utils
 unsigned long	get_time_ms(void);
 void			set_time(t_data *data);
 
+// Thread routine functions
 void			*c_routine(void *arg);
 void			*m_routine(void *arg);
+
+// Priority queue (min-heap) operations
+void			heap_push(t_pqueue *q, t_request req);
+t_request		heap_pop(t_pqueue *q);
+t_request		heap_peek(t_pqueue *q);
 
 #endif

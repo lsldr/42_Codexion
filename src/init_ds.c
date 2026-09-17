@@ -6,14 +6,14 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/16 20:22:52 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/17 10:02:35 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
 // last_cc_t to be set to data->start_t before launching
-int	init_coders(t_data *data)
+static int	init_coders(t_data *data)
 {
 	int			i;
 	t_coder		*coder;
@@ -38,7 +38,7 @@ int	init_coders(t_data *data)
 }
 
 // Called in init_dongles() below
-int	assign_dongles(t_data *data)
+static int	assign_dongles(t_data *data)
 {
 	int	i;
 
@@ -54,7 +54,7 @@ int	assign_dongles(t_data *data)
 	return (0);
 }
 
-int	init_dongles(t_data *data)
+static int	init_dongles(t_data *data)
 {
 	int			i;
 	t_dongle	*d;
@@ -68,7 +68,7 @@ int	init_dongles(t_data *data)
 		d = &data->dongles[i];
 		d->id = i + 1;
 		d->in_use = false;
-		d->avlb_at = 0;
+		d->free_t = 0;
 		d->queue.size = 0;
 		pthread_mutex_init(&d->mutex, NULL);
 	}
