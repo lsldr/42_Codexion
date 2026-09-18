@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:29:05 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 21:54:06 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 unsigned long	get_time_ms(void)
 {
-	struct timeval	tv;
+	struct timespec	ts;
 
-	gettimeofday(&tv, NULL);
-	return ((unsigned long)(tv.tv_sec * 1000 + tv.tv_usec / 1000));
+	clock_gettime(CLOCK_MONOTONIC, &ts);
+	return ((unsigned long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
 }
 
 void	set_time(t_data *data)

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:35:25 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 21:40:54 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@
 # include <sys/time.h>
 # include <time.h>
 # include <unistd.h>
+
+// Needed the usleep signature because of the above POSIX C src spec
+int				usleep(useconds_t usec);
 
 // Scheduling policy: earliest deadline first || first-in-first-out
 typedef enum e_scheduler
