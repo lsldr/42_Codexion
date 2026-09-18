@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/17 16:33:24 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 20:36:11 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ int	init_ds(t_data *data)
 	data->start_t = 0;
 	data->is_end = false;
 	pthread_mutex_init(&data->end_mutex, NULL);
+	pthread_cond_init(&data->end_cond, NULL);
 	pthread_mutex_init(&data->log_mutex, NULL);
 	if (init_coders(data))
 		return (1);

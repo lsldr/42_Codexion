@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:50:30 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/17 08:14:52 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 20:36:40 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,5 +37,6 @@ void	clean_all(t_data *data)
 	}
 	pthread_mutex_destroy(&data->log_mutex);
 	pthread_mutex_destroy(&data->end_mutex);
+	pthread_cond_destroy(&data->end_cond);
 	free(data);
 }

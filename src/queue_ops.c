@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 10:06:10 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/17 10:43:44 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 20:10:59 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,11 @@ static bool	has_priority(t_request req_a, t_request req_b)
 	if (req_a.key != req_b.key)
 		return (req_a.key < req_b.key);
 	return (req_a.coder_num < req_b.coder_num);
+}
+
+t_request	heap_peek(t_pqueue *queue)
+{
+	return (queue->items[0]);
 }
 
 void	heap_push(t_pqueue *q, t_request req)

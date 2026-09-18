@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/17 16:33:39 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 20:41:58 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ typedef struct s_data
 	unsigned long	start_t;	// Start timestamp in ms
 	bool			is_end;
 	pthread_mutex_t	end_mutex;	// Protect is_end
+	pthread_cond_t	end_cond;
 	pthread_mutex_t	log_mutex;	// Avoid interleaving messages
 	// The monitor thread checks coders' last_cc_t and cc_count
 	pthread_t		monitor_thr;
@@ -113,6 +114,10 @@ void			codexion(t_data *data);
 // Time utils
 unsigned long	get_time_ms(void);
 void			set_time(t_data *data);
+
+bool			compile_cycle(t_coder *coder);
+void			release_dongle(t_dongle *dongle, unsigned int cooldown_ms);
+bool			acquire_dongle(t_coder *coder, t_dongle *dongle);
 
 // Thread routine functions
 void			*c_routine(void *arg);
