@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 10:06:10 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 20:10:59 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 21:29:02 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,30 +45,47 @@ void	heap_push(t_pqueue *q, t_request req)
 	}
 }
 
-t_request	heap_pop(t_pqueue *q, int index, int left)
+t_request	heap_pop(t_pqueue *q)
 {
 	t_request	top;
 	t_request	tmp;
-	int			right;
+	int			i;
 	int			min;
 
 	top = q->items[0];
 	q->size--;
 	q->items[0] = q->items[q->size];
-	while (q->size > 0)
+	i = 0;
+	while (2 * i + 1 < q->size)
 	{
-		min = index;
-		right = left + 1;
-		if (left < q->size && has_priority(q->items[left], q->items[min]))
-			min = left;
-		if (right < q->size && has_priority(q->items[right], q->items[min]))
-			min = right;
-		if (min == index)
+		min = i;
+		if (has_priority(q->items[2 * i + 1], q->items[min]))
+			min = 2 * i + 1;
+		if (2 * i + 2 < q->size
+			&& has_priority(q->items[2 * i + 2], q->items[min]))
+			min = 2 * i + 2;
+		if (min == i)
 			break ;
-		tmp = q->items[index];
-		q->items[index] = q->items[min];
+		tmp = q->items[i];
+		q->items[i] = q->items[min];
 		q->items[min] = tmp;
-		index = min;
+		i = min;
 	}
 	return (top);
+}
+
+void	heap_remove(t_pqueue *q, unsigned short coder_num)
+{
+	int	i;
+
+	i = -1;
+	while (++i < q->size)
+	{
+		if (q->items[i].coder_num == coder_num)
+		{
+			q->size--;
+			q->items[i] = q->items[q->size];
+			break ;
+		}
+	}
 }

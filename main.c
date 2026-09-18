@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:06:26 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/15 11:56:04 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 21:15:50 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,14 @@ int	main(int argc, char **argv)
 	if (argc != 9)
 		return (fprintf(stderr, "8 arguments must be passed.\n"), 1);
 	data = malloc(sizeof(t_data));
+	if (!data)
+		return (fprintf(stderr, "Data malloc failed.\n"), 1);
+	memset(data, 0, sizeof(t_data));
 	if (parse_args(argv, data))
-		return (clean_all(data), fprintf(stderr, "Invalid arguments.\n"), 1);
+	{
+		free(data);
+		return (fprintf(stderr, "Invalid arguments.\n"), 1);
+	}
 	codexion(data);
 	return (0);
 }

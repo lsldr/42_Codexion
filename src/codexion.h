@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 20:41:58 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/18 21:28:52 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <sys/time.h>
+# include <time.h>
 # include <unistd.h>
 
 // Scheduling policy: earliest deadline first || first-in-first-out
@@ -42,12 +43,12 @@ typedef struct s_request
 // "pqueue" stands for "priority queue"
 typedef struct s_pqueue
 {
-	t_request		items[4];
-	int				size;
+	t_request	items[4];
+	int			size;
 }	t_pqueue;
 
 // All "_t" suffixes below are used to indicate time
-// Pthread type names also have it, 
+// Pthread type names also have it,
 // but they are prepended with "pthread_"
 typedef struct s_dongle
 {
@@ -80,15 +81,15 @@ typedef struct s_data
 	unsigned int	compile_t;
 	unsigned int	debug_t;
 	unsigned int	refactor_t;
-	unsigned int	req_compiles;	// If 0, run until a burnout
+	unsigned int	req_compiles; // If 0, run until a burnout
 	unsigned int	d_cooldown;
 	t_scheduler		scheduler;
 	// Below are the fields created to manage the simulation
-	unsigned long	start_t;	// Start timestamp in ms
+	unsigned long	start_t; // Start timestamp in ms
 	bool			is_end;
-	pthread_mutex_t	end_mutex;	// Protect is_end
+	pthread_mutex_t	end_mutex; // Protect is_end
 	pthread_cond_t	end_cond;
-	pthread_mutex_t	log_mutex;	// Avoid interleaving messages
+	pthread_mutex_t	log_mutex; // Avoid interleaving messages
 	// The monitor thread checks coders' last_cc_t and cc_count
 	pthread_t		monitor_thr;
 	t_coder			*coders;
@@ -111,10 +112,14 @@ int				init_threads(t_data *data);
 void			clean_all(t_data *data);
 void			codexion(t_data *data);
 
-// Time utils
+// Time and lifecycle utils
 unsigned long	get_time_ms(void);
 void			set_time(t_data *data);
+bool			is_simulation_over(t_data *data);
+bool			log_action(t_coder *coder, char *action);
+bool			coder_sleep(t_coder *coder, unsigned int duration_ms);
 
+// Coder compile cycle and dongle operations
 bool			compile_cycle(t_coder *coder);
 void			release_dongle(t_dongle *dongle, unsigned int cooldown_ms);
 bool			acquire_dongle(t_coder *coder, t_dongle *dongle);
@@ -127,5 +132,6 @@ void			*m_routine(void *arg);
 void			heap_push(t_pqueue *q, t_request req);
 t_request		heap_pop(t_pqueue *q);
 t_request		heap_peek(t_pqueue *q);
+void			heap_remove(t_pqueue *q, unsigned short coder_num);
 
 #endif
