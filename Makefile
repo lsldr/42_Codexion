@@ -27,7 +27,7 @@ OBJ     := $(SRC:%.c=$(OBJ_DIR)/%.o)
 HEADER  := $(SRC_DIR)/codexion.h
 
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re asan tsan valgrind
 
 
 all: $(NAME)
@@ -49,11 +49,14 @@ fclean: clean
 
 asan: fclean
 	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=address -g3"
+	@printf '\nAddressSanitizer is on\n'
 
 tsan: fclean
 	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=thread -g3"
+	@printf '\nThreadSanitizer is on\n'
 
 valgrind: fclean
 	@$(MAKE) all CFLAGS="$(CFLAGS) -g3"
+	@printf '\n-g3 flag applied\n'
 
 re: fclean all

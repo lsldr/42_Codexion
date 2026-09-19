@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 16:55:13 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 17:33:08 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,10 @@ bool	log_action(t_coder *coder, char *action)
 	if (coder->data->is_end)
 	{
 		pthread_mutex_unlock(&coder->data->log_mutex);
-		pthread_mutex_lock(&coder->data->end_mutex);
+		pthread_mutex_unlock(&coder->data->end_mutex);
 		return (false);
 	}
-	pthread_mutex_lock(&coder->data->end_mutex);
+	pthread_mutex_unlock(&coder->data->end_mutex);
 	ts = get_time_ms() - coder->data->start_t;
 	printf("%lu %u %s\n", ts, coder->coder_num, action);
 	pthread_mutex_unlock(&coder->data->log_mutex);
@@ -72,7 +72,7 @@ bool	coder_sleep(t_coder *coder, unsigned int duration_ms)
 	deadline = get_time_ms() + duration_ms;
 	while (!is_simulation_over(coder->data))
 	{
-		if (get_time_ms() >= deadline)
+		if (get_time_ms() > deadline)
 			return (false);
 		usleep(500);
 	}

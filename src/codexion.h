@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 12:31:04 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 17:31:52 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ typedef struct s_coder
 	pthread_cond_t	cond;		// For waiting in a dongle's queue
 	pthread_mutex_t	c_mutex;	// Protection of last_cc_t and cc_count
 	unsigned int	cc_count;	// Number of compiles completed
-	unsigned long	last_cc_t;	// Timestampt of the last compile's start
+	unsigned long	last_cc_t;	// Timestamp of the last compile's start
 	t_dongle		*l_dongle;
 	t_dongle		*r_dongle;
 	t_data			*data;
