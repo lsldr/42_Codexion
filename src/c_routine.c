@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 17:32:05 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 19:38:38 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,15 @@ static bool	handle_single_coder(t_coder *coder)
 // and right dongles of the coder, return true when the coder can't
 // take both of them, or just handle the single coder case with a
 // burnout when starved without compiles while holding the only dongle.
-static bool	take_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
+static bool	take_dongles(t_coder *coder)
 {
 	if (!coder->r_dongle)
-		return (handle_single_coder(coder));
-	if (coder->l_dongle->id < coder->r_dongle->id)
-	{
-		*first = coder->l_dongle;
-		*second = coder->r_dongle;
-	}
-	else
-	{
-		*first = coder->r_dongle;
-		*second = coder->l_dongle;
-	}
-	if (acquire_dongle(coder, *first))
+		handle_single_coder(coder);
+	if (acquire_dongle(coder, coder->l_dongle))
 		return (true);
-	if (acquire_dongle(coder, *second))
+	if (acquire_dongle(coder, coder->r_dongle))
 	{
-		release_dongle(*first, coder->data->d_cooldown);
+		release_dongle(coder->r_dongle, 0);
 		return (true);
 	}
 	log_action(coder, "has taken a dongle");
@@ -56,7 +46,7 @@ static bool	take_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 // Update the last compile start time after dongles were taken,
 // log compilation, sleep with regular checks on simulation end,
 // then release dongles and return the true if compilation was interrupted.
-static bool	compile_phase(t_coder *coder, t_dongle *first, t_dongle *second)
+static bool	compile_phase(t_coder *coder)
 {
 	bool	res;
 
@@ -65,8 +55,8 @@ static bool	compile_phase(t_coder *coder, t_dongle *first, t_dongle *second)
 	pthread_mutex_unlock(&coder->c_mutex);
 	log_action(coder, "is compiling");
 	res = coder_sleep(coder, coder->data->compile_t);
-	release_dongle(first, coder->data->d_cooldown);
-	release_dongle(second, coder->data->d_cooldown);
+	release_dongle(coder->l_dongle, coder->data->d_cooldown);
+	release_dongle(coder->r_dongle, coder->data->d_cooldown);
 	return (res);
 }
 
@@ -74,12 +64,9 @@ static bool	compile_phase(t_coder *coder, t_dongle *first, t_dongle *second)
 // true if the coder was interrupted in any one of them.
 bool	compile_cycle(t_coder *coder)
 {
-	t_dongle	*first;
-	t_dongle	*second;
-
-	if (take_dongles(coder, &first, &second))
+	if (take_dongles(coder))
 		return (true);
-	if (compile_phase(coder, first, second))
+	if (compile_phase(coder))
 		return (true);
 	pthread_mutex_lock(&coder->c_mutex);
 	coder->cc_count++;
@@ -104,7 +91,7 @@ void	*c_routine(void *arg)
 	while (!is_simulation_over(coder->data))
 	{
 		if (compile_cycle(coder))
-			break ;
+			continue ;
 		if (coder->data->req_compiles > 0
 			&& coder->cc_count >= coder->data->req_compiles)
 			break ;

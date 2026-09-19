@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 10:06:10 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 17:29:14 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 19:28:43 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,8 @@ void	heap_remove(t_pqueue *q, unsigned short coder_num)
 		{
 			q->size--;
 			q->items[i] = q->items[q->size];
+			if (q->size == 0)
+				break ;
 			if (i > 0 && has_priority(q->items[i], q->items[(i - 1) / 2]))
 				fix_up(q, i);
 			else

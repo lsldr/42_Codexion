@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 17:36:16 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 19:30:20 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,8 @@
 // Get key: request timestamp (FIFO) or the deadline to burnout (EDF)
 static unsigned long	get_key(t_coder *coder)
 {
-	unsigned long	cycle_time;
-
-	cycle_time = coder->data->compile_t
-		+ coder->data->debug_t
-		+ coder->data->refactor_t;
 	if (coder->data->scheduler == FIFO)
-		return (coder->last_cc_t + cycle_time);
+		return (get_time_ms());
 	return (coder->last_cc_t + coder->data->burnout_t);
 }
 
