@@ -6,14 +6,14 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 16:38:20 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 16:45:45 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
 // Set is_end=True
-static void	signal_end(t_data *data)
+static void	set_end(t_data *data)
 {
 	pthread_mutex_lock(&data->end_mutex);
 	data->is_end = true;
@@ -97,12 +97,12 @@ void	*m_routine(void *arg)
 		usleep(1000);
 		if (data->req_compiles > 0 && are_enough_compiles(data))
 		{
-			signal_end(data);
+			set_end(data);
 			break ;
 		}
 		if (is_any_burnout(data))
 		{
-			signal_end(data);
+			set_end(data);
 			break ;
 		}
 	}
