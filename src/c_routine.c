@@ -6,12 +6,13 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:08:37 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 11:38:21 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+// Handle the single coder case: take the dongle and end up burning out.
 static bool	handle_single_coder(t_coder *coder)
 {
 	if (acquire_dongle(coder, coder->l_dongle))
@@ -22,33 +23,40 @@ static bool	handle_single_coder(t_coder *coder)
 	return (true);
 }
 
-static bool	take_dongles(t_coder *coder, t_dongle **f, t_dongle **s)
+// After setting the first and second variables' addresses to the left
+// and right dongles of the coder, return true when the coder can't
+// take both of them, or just handle the single coder case with a
+// burnout when starved without compiles while holding the only dongle.
+static bool	take_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 {
 	if (!coder->r_dongle)
 		return (handle_single_coder(coder));
 	if (coder->l_dongle->id < coder->r_dongle->id)
 	{
-		*f = coder->l_dongle;
-		*s = coder->r_dongle;
+		*first = coder->l_dongle;
+		*second = coder->r_dongle;
 	}
 	else
 	{
-		*f = coder->r_dongle;
-		*s = coder->l_dongle;
+		*first = coder->r_dongle;
+		*second = coder->l_dongle;
 	}
-	if (acquire_dongle(coder, *f))
+	if (acquire_dongle(coder, *first))
 		return (true);
 	log_action(coder, "has taken a dongle");
-	if (acquire_dongle(coder, *s))
+	if (acquire_dongle(coder, *second))
 	{
-		release_dongle(*f, coder->data->d_cooldown);
+		release_dongle(*first, coder->data->d_cooldown);
 		return (true);
 	}
 	log_action(coder, "has taken a dongle");
 	return (false);
 }
 
-static bool	compile_phase(t_coder *coder, t_dongle *f, t_dongle *s)
+// Update the last compile start time after dongles were taken,
+// log compilation, sleep with regular checks on simulation end,
+// then release dongles and return the true if compilation was interrupted.
+static bool	compile_phase(t_coder *coder, t_dongle *first, t_dongle *second)
 {
 	bool	res;
 
@@ -57,20 +65,25 @@ static bool	compile_phase(t_coder *coder, t_dongle *f, t_dongle *s)
 	pthread_mutex_unlock(&coder->c_mutex);
 	log_action(coder, "is compiling");
 	res = coder_sleep(coder, coder->data->compile_t);
-	release_dongle(f, coder->data->d_cooldown);
-	release_dongle(s, coder->data->d_cooldown);
+	release_dongle(first, coder->data->d_cooldown);
+	release_dongle(second, coder->data->d_cooldown);
 	return (res);
 }
 
+// Do the full cycle of compiles with logs, returning
+// true if the coder was interrupted in any one of them.
 bool	compile_cycle(t_coder *coder)
 {
-	t_dongle	*f;
-	t_dongle	*s;
+	t_dongle	*first;
+	t_dongle	*second;
 
-	if (take_dongles(coder, &f, &s))
+	if (take_dongles(coder, &first, &second))
 		return (true);
-	if (compile_phase(coder, f, s))
+	if (compile_phase(coder, first, second))
 		return (true);
+	pthread_mutex_lock(&coder->c_mutex);
+	coder->cc_count++;
+	pthread_mutex_unlock(&coder->c_mutex);
 	log_action(coder, "is debugging");
 	if (coder_sleep(coder, coder->data->debug_t))
 		return (true);
@@ -80,20 +93,18 @@ bool	compile_cycle(t_coder *coder)
 	return (false);
 }
 
+// Coder routine: while simulation has not ended, do the
+// compile-debug-refactor cycles, and update the the cc count
+// accordingly.
 void	*c_routine(void *arg)
 {
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
-	if (coder->coder_num % 2 == 0)
-		usleep(500);
 	while (!is_simulation_over(coder->data))
 	{
 		if (compile_cycle(coder))
 			break ;
-		pthread_mutex_lock(&coder->c_mutex);
-		coder->cc_count++;
-		pthread_mutex_unlock(&coder->c_mutex);
 		if (coder->data->req_compiles > 0
 			&& coder->cc_count >= coder->data->req_compiles)
 			break ;

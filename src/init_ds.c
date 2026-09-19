@@ -6,13 +6,15 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:28:55 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:10:03 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-// last_cc_t to be set to data->start_t before launching
+// Initialize coder structures, assigning coder numbers
+// and doing pthread's initalizations.
+// `last_cc_t` to be set to data->start_t before launching
 static int	init_coders(t_data *data)
 {
 	int			i;
@@ -37,7 +39,9 @@ static int	init_coders(t_data *data)
 	return (0);
 }
 
-// Called in init_dongles() below
+// Called in init_dongles() below, assign each
+// coder's right and left dongles, setting the
+// right dongle to NULL if n_coders == 1.
 static int	assign_dongles(t_data *data)
 {
 	int	i;
@@ -54,6 +58,9 @@ static int	assign_dongles(t_data *data)
 	return (0);
 }
 
+// Initialize dongle structures and set up
+// their links to coders as per the task.
+// Also initialize dongles' mutexes.
 static int	init_dongles(t_data *data)
 {
 	int			i;
@@ -76,6 +83,8 @@ static int	init_dongles(t_data *data)
 	return (0);
 }
 
+// Initialize all the data structures
+// needed for the simulation.
 int	init_ds(t_data *data)
 {
 	data->start_t = 0;

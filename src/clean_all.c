@@ -6,12 +6,14 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:50:30 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:28:48 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:01:16 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+// Free all the allocated memory and destroy
+// pthread_mutex_t and pthread_cond_t variables
 void	clean_all(t_data *data)
 {
 	int	i;

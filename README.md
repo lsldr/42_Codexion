@@ -102,6 +102,7 @@ AI assistance was utilized for:
 - Explainig how AddressSanitizer, DRD, and Helgrind work and what they check.
 - Diagnosing subtle data races flagged by Valgrind DRD.
 - Drafting this README's headers for sections and links in the table of contents'.
+- Adding log messages for makefile commands
 
 ---
 

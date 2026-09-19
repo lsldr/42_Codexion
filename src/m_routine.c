@@ -6,13 +6,13 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:28:58 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 11:59:48 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-// Set is_end=True and signal end of simulation to all threads
+// Set is_end=True and signal end of simulation to all threads.
 static void	signal_end(t_data *data)
 {
 	int	i;
@@ -25,7 +25,22 @@ static void	signal_end(t_data *data)
 		pthread_cond_broadcast(&data->coders[i].cond);
 }
 
-// Check if any coder has burned out. Prints a msg if returning True
+// Skip the burnout check for a coder if they met the
+// required compiles check for otherwise a burnout
+// would be logged when the coders were to finish the compiles.
+static bool	is_coder_finished(t_data *data, int i)
+{
+	if (data->req_compiles > 0
+		&& data->coders[i].cc_count >= data->req_compiles)
+	{
+		pthread_mutex_unlock(&data->coders[i].c_mutex);
+		return (true);
+	}
+	return (false);
+}
+
+// Check if any coder has burned out.
+// Prints a log message if returning true.
 static bool	is_any_burnout(t_data *data)
 {
 	unsigned long	now;
@@ -36,13 +51,9 @@ static bool	is_any_burnout(t_data *data)
 	while (++i < data->n_coders)
 	{
 		pthread_mutex_lock(&data->coders[i].c_mutex);
-		if (data->req_compiles > 0
-			&& data->coders[i].cc_count >= data->req_compiles)
-		{
-			pthread_mutex_unlock(&data->coders[i].c_mutex);
+		if (is_coder_finished(data, i))
 			continue ;
-		}
-		if (now - data->coders[i].last_cc_t > data->burnout_t)
+		if (now - data->coders[i].last_cc_t >= data->burnout_t)
 		{
 			pthread_mutex_unlock(&data->coders[i].c_mutex);
 			pthread_mutex_lock(&data->log_mutex);
@@ -59,6 +70,7 @@ static bool	is_any_burnout(t_data *data)
 	return (false);
 }
 
+// Compare each coder's cc_count to check against the required amount.
 static bool	are_enough_compiles(t_data *data)
 {
 	int	i;
@@ -77,6 +89,9 @@ static bool	are_enough_compiles(t_data *data)
 	return (true);
 }
 
+// Monitor routine. Sleep 1000ms in each iteration,
+// check if the compiles count requirement is met or
+// if there is a burnout. If so, signal end to all threads.
 void	*m_routine(void *arg)
 {
 	t_data	*data;

@@ -1,17 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   time_utils.c                                       :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:54:06 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:29:21 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+// Get current time in milliseconds.
 unsigned long	get_time_ms(void)
 {
 	struct timespec	ts;
@@ -20,6 +21,8 @@ unsigned long	get_time_ms(void)
 	return ((unsigned long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
 }
 
+// Set start time of the simulation in milliseconds,
+// set coders' initial last compile time at this value.
 void	set_time(t_data *data)
 {
 	int		i;
@@ -30,6 +33,7 @@ void	set_time(t_data *data)
 		data->coders[i].last_cc_t = data->start_t;
 }
 
+// Check if simulation has ended
 bool	is_simulation_over(t_data *data)
 {
 	bool	result;
@@ -40,6 +44,7 @@ bool	is_simulation_over(t_data *data)
 	return (result);
 }
 
+// Print a log message on action
 bool	log_action(t_coder *coder, char *action)
 {
 	unsigned long	ts;
@@ -56,6 +61,7 @@ bool	log_action(t_coder *coder, char *action)
 	return (true);
 }
 
+// Sleep for a designated period while checking if simulation ended
 bool	coder_sleep(t_coder *coder, unsigned int duration_ms)
 {
 	unsigned long	deadline;

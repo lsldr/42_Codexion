@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:46:50 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:06:19 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ static unsigned long	get_key(t_coder *coder)
 	return (coder->last_cc_t + coder->data->burnout_t);
 }
 
+// A coder waits on their cond var to see
+// if the dongle mutex has been freed.
 static void	dongle_wait(t_coder *coder, t_dongle *dongle)
 {
 	struct timespec	ts;
@@ -74,6 +76,8 @@ static void	wake_dongle_queue(t_dongle *dongle)
 		pthread_cond_signal(dongle->queue.items[i].cond);
 }
 
+// Update dongle's `in_use` and `free_t` fields,
+// then signal this to the coders from the queue.
 void	release_dongle(t_dongle *dongle, unsigned int cooldown_ms)
 {
 	pthread_mutex_lock(&dongle->mutex);

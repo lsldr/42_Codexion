@@ -6,13 +6,13 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 15:06:16 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:29:03 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:27:22 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-/*Char ascii between 48 and 57 handled in check_uint() in parse_args.c*/
+// Char ascii between 48 and 57 handled in check_uint() in parse_args.c*/
 unsigned long	ft_strtoul(char *s, int s_len)
 {
 	int				i;
@@ -25,6 +25,7 @@ unsigned long	ft_strtoul(char *s, int s_len)
 	return (ul);
 }
 
+// Convert a string to unsigned int
 unsigned int	ft_strtoui(char *s, int s_len)
 {
 	int				i;

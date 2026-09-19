@@ -6,12 +6,17 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:31:55 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:28:50 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:02:59 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
+// Simulation master program. 
+// Clean all memory if initialization
+// of data structures or threads fails.
+// Wait on all the coder threads and the
+// monitor thread, then also clean all.
 void	codexion(t_data *data)
 {
 	int	i;

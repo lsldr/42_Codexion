@@ -1,34 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   check_uint.c                                       :+:      :+:    :+:   */
+/*   queue_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/10 14:42:25 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 12:00:23 by asuleime         ###   ########.fr       */
+/*   Created: 2026/09/19 12:25:15 by asuleime          #+#    #+#             */
+/*   Updated: 2026/09/19 12:37:08 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-// Check if the number fits within the 32-bit uint range
-int	check_uint(char **argv, int i)
+// Get the request at the top of the queue
+t_request	heap_peek(t_pqueue *queue)
 {
-	char			*raw_str;
-	int				j;
-	unsigned long	s_ul;
+	return (queue->items[0]);
+}
 
-	raw_str = argv[i];
-	j = strlen(raw_str);
-	if (j > 10)
-		return (0);
-	s_ul = 0;
-	while (--j > -1)
-		if (raw_str[j] < 48 || raw_str[j] > 57)
-			return (0);
-	s_ul = ft_strtoul(raw_str, strlen(raw_str));
-	if (s_ul >> 32)
-		return (0);
-	return (1);
+// Check if the request from the first param
+// has priority, returning true if so.
+bool	has_priority(t_request req_a, t_request req_b)
+{
+	if (req_a.key != req_b.key)
+		return (req_a.key < req_b.key);
+	return (req_a.coder_num < req_b.coder_num);
 }

@@ -6,13 +6,14 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:27:58 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:29:01 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:12:06 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-// Match the argv order of a numeric program argument with the fields in `data`
+// Match the argv order of a numeric program
+// argument with the fields in `data`.
 static void	nparg_router(unsigned int ui_arg, int i, t_data *data)
 {
 	if (i == 2)
@@ -30,7 +31,7 @@ static void	nparg_router(unsigned int ui_arg, int i, t_data *data)
 	return ;
 }
 
-// Initialize some fields of data from the numeric program arguments
+// Initialize some fields of data from the numeric program arguments.
 static int	fill_npargs(char **argv, t_data *data)
 {
 	int				i;
@@ -49,6 +50,7 @@ static int	fill_npargs(char **argv, t_data *data)
 	return (0);
 }
 
+// Parse program arguments with value checks.
 int	parse_args(char **argv, t_data *data)
 {
 	unsigned int	i;

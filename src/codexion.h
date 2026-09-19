@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:40:54 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:31:04 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct s_pqueue
 typedef struct s_dongle
 {
 	unsigned short	id;
-	pthread_mutex_t	mutex;
+	pthread_mutex_t	mutex;		// Mutex that coders lock
 	t_pqueue		queue;		// Priority queue
 	bool			in_use;
 	unsigned long	free_t;		// Timestamp of when the dongle will be free
@@ -135,10 +135,11 @@ bool			acquire_dongle(t_coder *coder, t_dongle *dongle);
 void			*c_routine(void *arg);
 void			*m_routine(void *arg);
 
-// Priority queue (min-heap) operations
+// Priority queue (min-heap) operations and utilities
 void			heap_push(t_pqueue *q, t_request req);
 t_request		heap_pop(t_pqueue *q);
 t_request		heap_peek(t_pqueue *q);
 void			heap_remove(t_pqueue *q, unsigned short coder_num);
+bool			has_priority(t_request req_a, t_request req_b);
 
 #endif
