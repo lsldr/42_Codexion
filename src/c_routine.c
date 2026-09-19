@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 11:38:21 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 16:35:33 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,12 +43,12 @@ static bool	take_dongles(t_coder *coder, t_dongle **first, t_dongle **second)
 	}
 	if (acquire_dongle(coder, *first))
 		return (true);
-	log_action(coder, "has taken a dongle");
 	if (acquire_dongle(coder, *second))
 	{
 		release_dongle(*first, coder->data->d_cooldown);
 		return (true);
 	}
+	log_action(coder, "has taken a dongle");
 	log_action(coder, "has taken a dongle");
 	return (false);
 }

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 12:29:21 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 16:09:29 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ unsigned long	get_time_ms(void)
 {
 	struct timespec	ts;
 
-	clock_gettime(CLOCK_MONOTONIC, &ts);
+	clock_gettime(CLOCK_REALTIME, &ts);
 	return ((unsigned long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
 }
 

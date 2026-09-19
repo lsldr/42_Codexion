@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 12:06:19 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 16:01:53 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static void	dongle_wait(t_coder *coder, t_dongle *dongle)
 {
 	struct timespec	ts;
 
-	clock_gettime(CLOCK_MONOTONIC, &ts);
+	clock_gettime(CLOCK_REALTIME, &ts);
 	ts.tv_nsec += 5000000;
 	if (ts.tv_nsec >= 1000000000)
 	{
