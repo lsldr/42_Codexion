@@ -31,7 +31,7 @@ SRC     := main.c \
            	$(SRC_DIR)/parse_args.c 	\
 			$(SRC_DIR)/queue_ops.c		\
 			$(SRC_DIR)/strto_num.c		\
-			$(SRC_DIR)/time_utils.c		\
+			$(SRC_DIR)/utils.c			\
 
 OBJ     := $(SRC:%.c=$(OBJ_DIR)/%.o)
 
