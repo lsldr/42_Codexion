@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 16:45:45 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 16:53:46 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,7 @@ static bool	is_any_burnout(t_data *data)
 		if (now - data->coders[i].last_cc_t > data->burnout_t)
 		{
 			pthread_mutex_unlock(&data->coders[i].c_mutex);
-			pthread_mutex_lock(&data->end_mutex);
-			data->is_end = true;
-			pthread_mutex_unlock(&data->end_mutex);
+			set_end(data);
 			pthread_mutex_lock(&data->log_mutex);
 			printf("%lu %u burned out\n", now - data->start_t,
 				data->coders[i].coder_num);
