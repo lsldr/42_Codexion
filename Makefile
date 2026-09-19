@@ -4,18 +4,6 @@ CC      :=  cc
 CFLAGS  :=  -Wall -Wextra -Werror -pthread
 CPPFLAGS:=  -Isrc
 
-# AddressSanitizer
-asan: CFLAGS += -fsanitize=address -g3
-asan: re
-
-# ThreadSanitizer
-tsan: CFLAGS += -fsanitize=thread -g3
-tsan: re
-
-# Valgrind
-valgrind: CFLAGS += -g3
-valgrind: re
-
 SRC_DIR :=  src
 OBJ_DIR :=  obj
 
@@ -60,4 +48,3 @@ fclean: clean
 		@rm -f $(NAME)
 
 re: fclean all
-

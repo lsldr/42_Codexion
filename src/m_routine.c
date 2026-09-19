@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 11:59:48 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/19 12:56:39 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,11 @@ static void	signal_end(t_data *data)
 	pthread_mutex_unlock(&data->end_mutex);
 	i = -1;
 	while (++i < data->n_coders)
+	{
+		pthread_mutex_lock(&data->coders[i].c_mutex);
 		pthread_cond_broadcast(&data->coders[i].cond);
+		pthread_mutex_lock(&data->coders[i].c_mutex);
+	}
 }
 
 // Skip the burnout check for a coder if they met the
@@ -46,13 +50,13 @@ static bool	is_any_burnout(t_data *data)
 	unsigned long	now;
 	int				i;
 
-	now = get_time_ms();
 	i = -1;
 	while (++i < data->n_coders)
 	{
 		pthread_mutex_lock(&data->coders[i].c_mutex);
 		if (is_coder_finished(data, i))
 			continue ;
+		now = get_time_ms();
 		if (now - data->coders[i].last_cc_t >= data->burnout_t)
 		{
 			pthread_mutex_unlock(&data->coders[i].c_mutex);
