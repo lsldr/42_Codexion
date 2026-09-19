@@ -25,7 +25,8 @@ Every coder must compile regularly. If a coder fails to start compiling within `
 
 Dongle acquisition conflicts are arbitrated using a custom **Binary Min-Heap Priority Queue** implementing two scheduling disciplines:
 - **FIFO (First-In, First-Out)**: Dongles are awarded in order of request arrival timestamps.
-- **EDF (Earliest Deadline First)**: Dongles are awarded to the coder with the earliest burnout deadline (`last_compile_start + time_to_burnout`), with lower coder ID acting as the deterministic tie-breaker.
+- **EDF (Earliest Deadline First)**: Dongles are awarded to the coder with the earliest burnout deadline (`last_compile_start + time_to_burnout`).
+ Lower coder ID (`coder_num` field value) is the deterministic tie-breaker.
 
 ---
 
@@ -48,7 +49,7 @@ make tsan
 # Valgrind debug symbols build
 make valgrind
 
-# Clean object files and binaries
+# Clean object files (1), plus binaries (2), and make again (3)
 make clean
 make fclean
 make re
@@ -61,6 +62,7 @@ make re
 ```
 
 #### Arguments:
+Other than `number_of_coders` and `scheduler`, all arguments are within the 32-bit unsigned integer range.
 - `number_of_coders`: Number of coders and dongles (1 to 300).
 - `time_to_burnout`: Milliseconds before a coder burns out if not compiling.
 - `time_to_compile`: Milliseconds spent compiling (holding two dongles).
@@ -87,18 +89,19 @@ make re
 ## Resources & AI Usage
 
 ### References
+- *Multithreaded Programming (POSIX pthreads Tutorial)* at [randu.org](https://randu.org/tutorials/threads/).
 - *Operating Systems: Three Easy Pieces* (Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau) — Concurrency, Condition Variables, Semaphores, and Deadlock.
 - *POSIX Threads Programming* (Lawrence Livermore National Laboratory tutorial).
 - *The Linux Programming Interface* (Michael Kerrisk) — POSIX Threads and Real-Time Signals.
 - *Introduction to Algorithms* (Cormen, Leiserson, Rivest, Stein) — Binary Heaps and Priority Queues.
-- Valgrind Documentation: Memcheck, Helgrind, and DRD Manuals.
+- Valgrind Documentation: Memcheck, Helgrind, and DRD Manuals. [[link]](https://valgrind.org/docs/manual/index.html)
 
 ### Description of AI Usage
 AI assistance was utilized for:
 - Code audits against 42 Norm (v4.1) constraints (verifying 25-line limits, 5-function limits, and pointer alignments).
-- Diagnosing subtle data races flagged by Valgrind DRD.
 - Explainig how AddressSanitizer, DRD, and Helgrind work and what they check.
-- Drafting this README's headers for sections and text links at the beginning.
+- Diagnosing subtle data races flagged by Valgrind DRD.
+- Drafting this README's headers for sections and links in the table of contents'.
 
 ---
 
@@ -132,7 +135,7 @@ AI assistance was utilized for:
 
 6. **Single Coder Edge Case**:
    - When `n_coders == 1`, only 1 dongle exists on the table (`coder->r_dongle == NULL`).
-   - `handle_single_coder` acquires the single available dongle, prints the log, and waits until the monitor thread detects burnout at `burnout_t` ms.
+   - `handle_single_coder`, called in this case, acquires the single available dongle, prints the log, and waits until the monitor thread detects burnout at `burnout_t` ms.
 
 ---
 
