@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/17 10:06:10 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 19:28:43 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 10:32:12 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ t_request	heap_pop(t_pqueue *q)
 	return (top);
 }
 
-// Remove a request identified by coder_num from the queue.
+// Remove a request(s) identified by coder_num from the queue.
 void	heap_remove(t_pqueue *q, unsigned short coder_num)
 {
 	int	i;
@@ -99,7 +99,6 @@ void	heap_remove(t_pqueue *q, unsigned short coder_num)
 				fix_up(q, i);
 			else
 				fix_down(q, i);
-			break ;
 		}
 	}
 }

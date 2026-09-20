@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 19:30:20 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 10:35:24 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	dongle_wait(t_coder *coder, t_dongle *dongle)
 	struct timespec	ts;
 
 	clock_gettime(CLOCK_REALTIME, &ts);
-	ts.tv_nsec += 5000000;
+	ts.tv_nsec += 500000;
 	if (ts.tv_nsec >= 1000000000)
 	{
 		ts.tv_sec += 1;
@@ -83,6 +83,6 @@ void	release_dongle(t_dongle *dongle, unsigned int cooldown_ms)
 	pthread_mutex_lock(&dongle->mutex);
 	dongle->in_use = false;
 	dongle->free_t = get_time_ms() + cooldown_ms;
-	wake_dongle_queue(dongle);
 	pthread_mutex_unlock(&dongle->mutex);
+	wake_dongle_queue(dongle);
 }

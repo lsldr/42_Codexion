@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 17:07:13 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 10:40:09 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ static bool	are_enough_compiles(t_data *data)
 		}
 		pthread_mutex_unlock(&data->coders[i].c_mutex);
 	}
+	pthread_mutex_lock(&data->log_mutex);
+	printf("Each coder has compiled %u times.\n", data->req_compiles);
 	return (true);
 }
 

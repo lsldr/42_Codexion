@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 20:01:04 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 12:11:05 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 10:25:15 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	init_threads(t_data *data)
 	{
 		coder = &data->coders[i];
 		if (pthread_create(&coder->thr, NULL, c_routine, coder) != 0)
-			return (fprintf(stderr, "Failed to create monitor thread\n"), 1);
+			return (fprintf(stderr, "Failed to create the monitor thread\n"), 1);
 	}
 	if (pthread_create(&data->monitor_thr, NULL, m_routine, data) != 0)
 		return (fprintf(stderr, "Failed to create monitor thread\n"), 2);
