@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 10:35:24 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 11:30:58 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ static unsigned long	get_key(t_coder *coder)
 	return (coder->last_cc_t + coder->data->burnout_t);
 }
 
-// A coder waits on their cond var to see
-// if the dongle mutex has been freed.
+// A coder waits on their cond variable to
+// see if the dongle mutex has been unlocked.
 static void	dongle_wait(t_coder *coder, t_dongle *dongle)
 {
 	struct timespec	ts;
@@ -66,23 +66,14 @@ bool	acquire_dongle(t_coder *coder, t_dongle *dongle)
 	return (false);
 }
 
-// Signal all waiters in queue to re-check their condition
-static void	wake_dongle_queue(t_dongle *dongle)
-{
-	int	i;
-
-	i = -1;
-	while (++i < dongle->queue.size)
-		pthread_cond_signal(dongle->queue.items[i].cond);
-}
-
 // Update dongle's `in_use` and `free_t` fields,
-// then signal this to the coders from the queue.
+// then signal this to the first-in-queue coder.
 void	release_dongle(t_dongle *dongle, unsigned int cooldown_ms)
 {
 	pthread_mutex_lock(&dongle->mutex);
-	dongle->in_use = false;
 	dongle->free_t = get_time_ms() + cooldown_ms;
+	dongle->in_use = false;
+	if (dongle->queue.size > 0)
+		pthread_cond_signal(dongle->queue.items[0].cond);
 	pthread_mutex_unlock(&dongle->mutex);
-	wake_dongle_queue(dongle);
 }
