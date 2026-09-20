@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/19 12:25:15 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 17:11:44 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 17:52:47 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,11 @@ bool	has_priority(t_request req_a, t_request req_b)
 void	exit_queues(t_coder *coder)
 {
 	pthread_mutex_lock(&coder->r_dongle->mutex);
+	coder->r_dongle->in_use = false;
 	heap_remove(&coder->r_dongle->queue, coder->coder_num);
 	pthread_mutex_unlock(&coder->r_dongle->mutex);
 	pthread_mutex_lock(&coder->l_dongle->mutex);
+	coder->l_dongle->in_use = false;
 	heap_remove(&coder->l_dongle->queue, coder->coder_num);
 	pthread_mutex_unlock(&coder->l_dongle->mutex);
 }

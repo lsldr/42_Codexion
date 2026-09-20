@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 17:24:31 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 17:51:42 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,29 +53,30 @@ void	push_requests(t_coder *coder)
 	pthread_mutex_unlock(&coder->r_dongle->mutex);
 }
 
-// Push requests into left and right dongles' queues,
-// Wait for them to free if 
-bool	acquire_dongles(t_coder *coder, t_dongle *l_dongle, t_dongle *r_dongle)
+// Push requests into first and right dongles' queues,
+// Wait for them to free if
+bool	acquire_dongles(t_coder *coder,
+	t_dongle *first_dongle, t_dongle *second_dongle)
 {
 	push_requests(coder);
 	while (!is_simulation_over(coder->data))
 	{
-		pthread_mutex_lock(&l_dongle->mutex);
-		pthread_mutex_lock(&r_dongle->mutex);
-		if (heap_peek(&l_dongle->queue) == coder->coder_num
-			&& !l_dongle->in_use && get_time_ms() >= l_dongle->free_t
-			&& heap_peek(&r_dongle->queue) == coder->coder_num
-			&& !r_dongle->in_use && get_time_ms() >= r_dongle->free_t)
+		pthread_mutex_lock(&first_dongle->mutex);
+		pthread_mutex_lock(&first_dongle->mutex);
+		if (heap_peek(&first_dongle->queue) == coder->coder_num
+			&& !first_dongle->in_use && get_time_ms() >= first_dongle->free_t
+			&& heap_peek(&second_dongle->queue) == coder->coder_num
+			&& !second_dongle->in_use && get_time_ms() >= second_dongle->free_t)
 		{
 			pop_queues(coder);
-			pthread_mutex_unlock(&l_dongle->mutex);
-			pthread_mutex_unlock(&r_dongle->mutex);
+			pthread_mutex_unlock(&first_dongle->mutex);
+			pthread_mutex_unlock(&second_dongle->mutex);
 			break ;
 		}
-		pthread_mutex_unlock(&l_dongle->mutex);
-		pthread_mutex_unlock(&r_dongle->mutex);
-		dongle_wait(coder, l_dongle);
-		dongle_wait(coder, r_dongle);
+		dongle_wait(coder, first_dongle);
+		pthread_mutex_unlock(&first_dongle->mutex);
+		dongle_wait(coder, second_dongle);
+		pthread_mutex_unlock(&second_dongle->mutex);
 	}
 	if (is_simulation_over(coder->data))
 		return (exit_queues(coder), true);

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 17:23:29 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 17:48:55 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,8 @@
 static bool	handle_single_coder(t_coder *coder)
 {
 	pthread_mutex_lock(&coder->l_dongle->mutex);
-	coder->l_dongle->free_t = get_time_ms() + coder->data->d_cooldown;
 	coder->l_dongle->in_use = true;
-	pthread_mutex_lock(&coder->l_dongle->mutex);
+	pthread_mutex_unlock(&coder->l_dongle->mutex);
 	log_action(coder, "has taken a dongle");
 	while (!is_simulation_over(coder->data))
 		usleep(500);
@@ -31,9 +30,24 @@ static bool	handle_single_coder(t_coder *coder)
 // burnout when starved without compiles while holding the only dongle.
 static bool	take_dongles(t_coder *coder)
 {
+	unsigned short	first_dongle_index;
+	unsigned short	second_dongle_index;
+
+	if (coder->l_dongle->id < coder->r_dongle->id)
+	{
+		first_dongle_index = coder->l_dongle->id - 1;
+		second_dongle_index = coder->r_dongle->id - 1;
+	}
+	else
+	{
+		first_dongle_index = coder->r_dongle->id - 1;
+		second_dongle_index = coder->l_dongle->id - 1;
+	}
 	if (!coder->r_dongle)
 		return (handle_single_coder(coder));
-	if (acquire_dongles(coder, coder->l_dongle, coder->r_dongle))
+	if (acquire_dongles(coder,
+			&coder->data->dongles[first_dongle_index],
+			&coder->data->dongles[second_dongle_index]))
 		return (true);
 	log_action(coder, "has taken a dongle");
 	log_action(coder, "has taken a dongle");

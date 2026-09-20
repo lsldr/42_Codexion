@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 16:32:43 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 17:53:24 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ typedef struct s_data
 	unsigned int	compile_t;
 	unsigned int	debug_t;
 	unsigned int	refactor_t;
-	unsigned int	req_compiles; // If 0, run until a burnout
+	unsigned int	req_compiles;
 	unsigned int	d_cooldown;
 	t_scheduler		scheduler;
 	// Below are the fields created to manage the simulation
