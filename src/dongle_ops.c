@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 12:22:43 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 13:00:30 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,16 @@ static unsigned long	get_key(t_coder *coder)
 	return (coder->last_cc_t + coder->data->burnout_t);
 }
 
-// A coder waits on their cond variable to
-// see if the dongle mutex has been unlocked.
+// Coders wait on their cond variable to see
+// if the dongle has become available for them.
+// Used timed wait to make sure it does not wait
+// too long when the simulation ends.
 static void	dongle_wait(t_coder *coder, t_dongle *dongle)
 {
 	struct timespec	ts;
 
 	clock_gettime(CLOCK_REALTIME, &ts);
-	ts.tv_nsec += 5000000;
+	ts.tv_nsec += 1000000;
 	if (ts.tv_nsec >= 1000000000)
 	{
 		ts.tv_sec += 1;

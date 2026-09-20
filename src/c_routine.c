@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 11:18:31 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 13:39:05 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,28 +30,25 @@ static bool	handle_single_coder(t_coder *coder)
 static bool	take_dongles(t_coder *coder)
 {
 	if (!coder->r_dongle)
-		handle_single_coder(coder);
+		return (handle_single_coder(coder));
 	if (coder->coder_num == coder->data->n_coders)
 	{
 		if (acquire_dongle(coder, coder->r_dongle))
 			return (true);
+		log_action(coder, "has taken a dongle");
 		if (acquire_dongle(coder, coder->l_dongle))
-		{
-			release_dongle(coder->r_dongle, coder->data->d_cooldown);
-			return (true);
-		}
+			return (release_dongle(coder->r_dongle, coder->data->d_cooldown),
+				true);
 	}
 	else
 	{
 		if (acquire_dongle(coder, coder->l_dongle))
 			return (true);
+		log_action(coder, "has taken a dongle");
 		if (acquire_dongle(coder, coder->r_dongle))
-		{
-			release_dongle(coder->l_dongle, coder->data->d_cooldown);
-			return (true);
-		}
+			return (release_dongle(coder->l_dongle, coder->data->d_cooldown),
+				true);
 	}
-	log_action(coder, "has taken a dongle");
 	log_action(coder, "has taken a dongle");
 	return (false);
 }

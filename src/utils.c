@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 12:23:31 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 13:36:10 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ bool	coder_sleep(t_coder *coder, unsigned int duration_ms)
 	deadline = get_time_ms() + duration_ms;
 	while (!is_simulation_over(coder->data))
 	{
-		if (get_time_ms() > deadline)
+		if (get_time_ms() >= deadline)
 			return (false);
 		usleep(500);
 	}

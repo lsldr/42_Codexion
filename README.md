@@ -1,6 +1,6 @@
 *This project has been created as part of the 42 curriculum by asuleime.*
 
-# Codexion: Master the race for resources before the deadline masters you
+# Codexion: Master the race for resources in multi-threaded programming
 
 Codexion is a concurrent systems programming project developed at 42. It models a circular inclusive co-working hub where multiple coder threads compete for shared USB dongles to compile quantum code on a central quantum compiler, debug, and refactor, all while avoiding burnout under strict real-time deadline constraints and fair arbitration policies (FIFO and EDF).
 
@@ -98,11 +98,14 @@ Other than `number_of_coders` and `scheduler`, all arguments are within the 32-b
 
 ### Description of AI Usage
 AI assistance was utilized for:
-- Code audits against 42 Norm (v4.1) constraints (verifying 25-line limits, 5-function limits, and pointer alignments).
+- Code audits against 42 Norm (v4.1) constraints.
 - Explainig how AddressSanitizer, DRD, and Helgrind work and what they check.
 - Diagnosing subtle data races flagged by Valgrind DRD.
+- Helping understand the 4 Coffman conditions in the context of Codexion.
 - Drafting this README's headers for sections and links in the table of contents'.
-- Adding log messages for makefile commands
+- Adding log messages for makefile commands.
+- Explaining the helgrind warnings and adjusting sleep times for the threads.
+- Generating bash commands to do multi-run tests on burnouts.
 
 ---
 
@@ -161,10 +164,16 @@ The implementation relies on POSIX thread primitives (`pthread_mutex_t`, `pthrea
 5. **`pthread_mutex_t log_mutex`**:
    Ensures mutual exclusion for stdout, serializing terminal writes across all threads.
 
-### Note on Helgrind warning: "...dubious: associated lock is not held by any thread"
+### Note on Helgrind warnings about unheld lock when calling pthread_cond_signal()
 
 This error warning is caused by the use of `pthread_cond_timedwait()` by coders when waiting for a dongle to become available. The Valgrind [docs](https://valgrind.org/docs/manual/hg-manual.html#hg-manual.api-checks) mentions the following:
 
 "Signalling or broadcasting a condition variable when the associated mutex is unlocked is not strictly an error. The resulting thread scheduling may be unpredictable if the mutex is not held. The option --check-cond-signal-mutex=yes|no turns on checking for this situation. This kind of error is categorised as 'dubious'. The check is not turned on by default because some standard C and C++ libraries use condition signals/broadcasts with the associated mutex unlocked."
 
-In this implementation of Codexion, this issue is caused by 
+```bash 
+pthread_cond_{signal,broadcast}: dubious: associated lock is not held from inside pthread_cond_timedwait
+```
+
+Is this helgrind warning.
+
+All stack traces are entirely within glibc, and pthread_cond_timedwait is always called with the dongle mutex held. If a timed wait expires just as another thread's signal reaches it, glibc treats the wait as cancelled but having consumed that signal, and sends a replacement signal so other waiters are not left without a wakeup. That internal call happens while the timing-out thread has released the mutex inside the wait. Helgrind then sees a signal sent while the dongle mutex is held by no thread, or by a different one. The check is advisory, since POSIX permits signalling without holding the mutex. The extra signal can only cause a spurious wakeup, and every wait loop rechecks its predicate (queue head, in_use, free_t, is_end) under the dongle mutex, so correctness is unaffected. Helgrind reports no data races or lock-order violations, and DRD reports nothing.

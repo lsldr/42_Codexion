@@ -57,6 +57,6 @@ tsan: fclean
 
 valgrind: fclean
 	@$(MAKE) all CFLAGS="$(CFLAGS) -g"
-	@printf '\n-g3 flag applied\n'
+	@printf '\n-g flag applied\n'
 
 re: fclean all
