@@ -6,28 +6,20 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 17:31:52 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 11:53:26 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODEXION_H
 # define CODEXION_H
 
-# ifndef _POSIX_C_SOURCE
-#  define _POSIX_C_SOURCE 200809L
-# endif
-
 # include <pthread.h>
 # include <stdbool.h>
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
-# include <sys/time.h>
 # include <time.h>
 # include <unistd.h>
-
-// Needed the usleep signature because of the above POSIX C src spec
-int				usleep(useconds_t usec);
 
 // Scheduling policy: earliest deadline first || first-in-first-out
 typedef enum e_scheduler

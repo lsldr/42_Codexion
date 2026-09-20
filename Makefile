@@ -48,15 +48,15 @@ fclean: clean
 		@rm -f $(NAME)
 
 asan: fclean
-	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=address -g3"
+	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=address -g"
 	@printf '\nAddressSanitizer is on\n'
 
 tsan: fclean
-	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=thread -g3"
+	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=thread -g"
 	@printf '\nThreadSanitizer is on\n'
 
 valgrind: fclean
-	@$(MAKE) all CFLAGS="$(CFLAGS) -g3"
+	@$(MAKE) all CFLAGS="$(CFLAGS) -g"
 	@printf '\n-g3 flag applied\n'
 
 re: fclean all

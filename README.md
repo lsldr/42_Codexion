@@ -161,3 +161,10 @@ The implementation relies on POSIX thread primitives (`pthread_mutex_t`, `pthrea
 5. **`pthread_mutex_t log_mutex`**:
    Ensures mutual exclusion for stdout, serializing terminal writes across all threads.
 
+### Note on Helgrind warning: "...dubious: associated lock is not held by any thread"
+
+This error warning is caused by the use of `pthread_cond_timedwait()` by coders when waiting for a dongle to become available. The Valgrind [docs](https://valgrind.org/docs/manual/hg-manual.html#hg-manual.api-checks) mentions the following:
+
+"Signalling or broadcasting a condition variable when the associated mutex is unlocked is not strictly an error. The resulting thread scheduling may be unpredictable if the mutex is not held. The option --check-cond-signal-mutex=yes|no turns on checking for this situation. This kind of error is categorised as 'dubious'. The check is not turned on by default because some standard C and C++ libraries use condition signals/broadcasts with the associated mutex unlocked."
+
+In this implementation of Codexion, this issue is caused by 
