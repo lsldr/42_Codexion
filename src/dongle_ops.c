@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 13:00:30 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 17:24:31 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,33 +38,47 @@ static void	dongle_wait(t_coder *coder, t_dongle *dongle)
 	pthread_cond_timedwait(&coder->cond, &dongle->mutex, &ts);
 }
 
-// Push into dongle queue and wait until this coder is highest priority
-// and dongle is available. Returns true if interrupted by is_end.
-bool	acquire_dongle(t_coder *coder, t_dongle *dongle)
+void	push_requests(t_coder *coder)
 {
 	t_request	req;
 
 	req.coder_num = coder->coder_num;
 	req.key = get_key(coder);
 	req.cond = &coder->cond;
-	pthread_mutex_lock(&dongle->mutex);
-	heap_push(&dongle->queue, req);
+	pthread_mutex_lock(&coder->l_dongle->mutex);
+	heap_push(&coder->l_dongle->queue, req);
+	pthread_mutex_unlock(&coder->l_dongle->mutex);
+	pthread_mutex_lock(&coder->r_dongle->mutex);
+	heap_push(&coder->r_dongle->queue, req);
+	pthread_mutex_unlock(&coder->r_dongle->mutex);
+}
+
+// Push requests into left and right dongles' queues,
+// Wait for them to free if 
+bool	acquire_dongles(t_coder *coder, t_dongle *l_dongle, t_dongle *r_dongle)
+{
+	push_requests(coder);
 	while (!is_simulation_over(coder->data))
 	{
-		if (heap_peek(&dongle->queue).coder_num == coder->coder_num
-			&& !dongle->in_use && get_time_ms() >= dongle->free_t)
+		pthread_mutex_lock(&l_dongle->mutex);
+		pthread_mutex_lock(&r_dongle->mutex);
+		if (heap_peek(&l_dongle->queue) == coder->coder_num
+			&& !l_dongle->in_use && get_time_ms() >= l_dongle->free_t
+			&& heap_peek(&r_dongle->queue) == coder->coder_num
+			&& !r_dongle->in_use && get_time_ms() >= r_dongle->free_t)
+		{
+			pop_queues(coder);
+			pthread_mutex_unlock(&l_dongle->mutex);
+			pthread_mutex_unlock(&r_dongle->mutex);
 			break ;
-		dongle_wait(coder, dongle);
+		}
+		pthread_mutex_unlock(&l_dongle->mutex);
+		pthread_mutex_unlock(&r_dongle->mutex);
+		dongle_wait(coder, l_dongle);
+		dongle_wait(coder, r_dongle);
 	}
 	if (is_simulation_over(coder->data))
-	{
-		heap_remove(&dongle->queue, coder->coder_num);
-		pthread_mutex_unlock(&dongle->mutex);
-		return (true);
-	}
-	heap_pop(&dongle->queue);
-	dongle->in_use = true;
-	pthread_mutex_unlock(&dongle->mutex);
+		return (exit_queues(coder), true);
 	return (false);
 }
 

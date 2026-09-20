@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 13:36:10 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 16:09:53 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void	set_time(t_data *data)
 // Check if simulation has ended
 bool	is_simulation_over(t_data *data)
 {
-	bool	result;
+	bool			result;
 
 	pthread_mutex_lock(&data->end_mutex);
 	result = data->is_end;

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 11:53:26 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 16:32:43 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,8 @@ bool			coder_sleep(t_coder *coder, unsigned int duration_ms);
 // Coder compile cycle and dongle operations
 bool			compile_cycle(t_coder *coder);
 void			release_dongle(t_dongle *dongle, unsigned int cooldown_ms);
-bool			acquire_dongle(t_coder *coder, t_dongle *dongle);
+bool			acquire_dongles(t_coder *coder, t_dongle *l_dongle,\
+								t_dongle *r_dongle);
 
 // Thread routine functions
 void			*c_routine(void *arg);
@@ -130,8 +131,11 @@ void			*m_routine(void *arg);
 // Priority queue (min-heap) operations and utilities
 void			heap_push(t_pqueue *q, t_request req);
 t_request		heap_pop(t_pqueue *q);
-t_request		heap_peek(t_pqueue *q);
+unsigned short	heap_peek(t_pqueue *queue);
 void			heap_remove(t_pqueue *q, unsigned short coder_num);
 bool			has_priority(t_request req_a, t_request req_b);
+void			exit_queues(t_coder *coder);
+void			pop_queues(t_coder *coder);
+
 
 #endif

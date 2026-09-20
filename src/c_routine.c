@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 13:39:05 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 17:23:29 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,13 @@
 // Handle the single coder case: take the dongle and end up burning out.
 static bool	handle_single_coder(t_coder *coder)
 {
-	if (acquire_dongle(coder, coder->l_dongle))
-		return (true);
+	pthread_mutex_lock(&coder->l_dongle->mutex);
+	coder->l_dongle->free_t = get_time_ms() + coder->data->d_cooldown;
+	coder->l_dongle->in_use = true;
+	pthread_mutex_lock(&coder->l_dongle->mutex);
 	log_action(coder, "has taken a dongle");
 	while (!is_simulation_over(coder->data))
-		usleep(1000);
+		usleep(500);
 	return (true);
 }
 
@@ -31,24 +33,9 @@ static bool	take_dongles(t_coder *coder)
 {
 	if (!coder->r_dongle)
 		return (handle_single_coder(coder));
-	if (coder->coder_num == coder->data->n_coders)
-	{
-		if (acquire_dongle(coder, coder->r_dongle))
-			return (true);
-		log_action(coder, "has taken a dongle");
-		if (acquire_dongle(coder, coder->l_dongle))
-			return (release_dongle(coder->r_dongle, coder->data->d_cooldown),
-				true);
-	}
-	else
-	{
-		if (acquire_dongle(coder, coder->l_dongle))
-			return (true);
-		log_action(coder, "has taken a dongle");
-		if (acquire_dongle(coder, coder->r_dongle))
-			return (release_dongle(coder->l_dongle, coder->data->d_cooldown),
-				true);
-	}
+	if (acquire_dongles(coder, coder->l_dongle, coder->r_dongle))
+		return (true);
+	log_action(coder, "has taken a dongle");
 	log_action(coder, "has taken a dongle");
 	return (false);
 }
@@ -98,6 +85,8 @@ void	*c_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
+	if (coder->data->req_compiles == 0)
+		return (NULL);
 	while (!is_simulation_over(coder->data))
 	{
 		if (compile_cycle(coder))

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 13:33:15 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/20 16:19:53 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,8 @@ void	*m_routine(void *arg)
 	data = (t_data *)arg;
 	while (true)
 	{
-		usleep(1000);
-		if (data->req_compiles > 0 && are_enough_compiles(data))
+		usleep(500);
+		if (data->req_compiles == 0 || are_enough_compiles(data))
 		{
 			set_end(data);
 			pthread_mutex_lock(&data->log_mutex);
