@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:45:45 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/19 17:32:19 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 12:50:37 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static int	init_coders(t_data *data)
 		coder->last_cc_t = 0;
 		coder->l_dongle = NULL;
 		coder->r_dongle = NULL;
+		coder->is_wake = false;
 		coder->data = data;
 		pthread_mutex_init(&(coder->c_mutex), NULL);
 		pthread_cond_init(&(coder->cond), NULL);

@@ -6,11 +6,19 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 11:46:24 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 13:43:20 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+void	wake_coder(t_coder *c)
+{
+	pthread_mutex_lock(&c->c_mutex);
+	c->is_wake = true;
+	pthread_cond_signal(&c->cond);
+	pthread_mutex_unlock(&c->c_mutex);
+}
 
 // Check if simulation has ended
 bool	is_simulation_over(t_data *data)
@@ -43,7 +51,7 @@ bool	log_action(t_coder *coder, char *action)
 	return (true);
 }
 
-// Sleep for 0.5 milliseconds while checking if simulation ended
+// Sleep for 1 millisecond while checking if simulation ended
 bool	coder_sleep(t_coder *coder, unsigned int duration_ms)
 {
 	unsigned long	deadline;
@@ -53,7 +61,7 @@ bool	coder_sleep(t_coder *coder, unsigned int duration_ms)
 	{
 		if (get_time_ms() >= deadline)
 			return (false);
-		usleep(500);
+		usleep(1000);
 	}
 	return (true);
 }

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 11:36:28 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 13:17:11 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static bool	handle_single_coder(t_coder *coder)
 	pthread_mutex_unlock(&coder->l_dongle->mutex);
 	log_action(coder, "has taken a dongle");
 	while (!is_simulation_over(coder->data))
-		usleep(500);
+		usleep(1000);
 	return (true);
 }
 

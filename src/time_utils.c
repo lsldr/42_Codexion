@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/21 11:46:14 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 11:57:05 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 12:57:20 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,4 +50,12 @@ unsigned long	get_wait_time_ms(
 	if (wait_ms == 0)
 		wait_ms = 1;
 	return (wait_ms);
+}
+
+// Get key: request timestamp (FIFO) or the deadline to burnout (EDF).
+unsigned long	get_key(t_coder *coder)
+{
+	if (coder->data->scheduler == FIFO)
+		return (get_time_ms());
+	return (coder->last_cc_t + coder->data->burnout_t);
 }

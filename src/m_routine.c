@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 11:08:13 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 13:16:25 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static void	signal_end(t_data *data)
 	data->is_end = true;
 	pthread_mutex_unlock(&data->end_mutex);
 	while (++i < data->n_coders)
-		pthread_cond_broadcast(&data->coders[i].cond);
+		wake_coder(&data->coders[i]);
 }
 
 // Skip the burnout check for a coder if they met the
@@ -97,7 +97,7 @@ void	*m_routine(void *arg)
 	data = (t_data *)arg;
 	while (true)
 	{
-		usleep(500);
+		usleep(1000);
 		if (data->req_compiles == 0 || are_enough_compiles(data))
 		{
 			signal_end(data);

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 11:57:43 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 13:11:52 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,15 @@ typedef enum e_scheduler
 	FIFO
 }	t_scheduler;
 
-// Forward declaration as there is a t_data * field in t_coder
+// Forward declarations of t_data & t_coder
 typedef struct s_data	t_data;
+typedef struct s_coder	t_coder;
 
 typedef struct s_request
 {
 	unsigned short	coder_num;	// The tie-breaker: lower value in priority
 	unsigned long	key;		// Request time (FIFO) or deadline (EDF)
-	pthread_cond_t	*cond;		// Points to coder->cond
+	t_coder			*coder;		// Points to the coder who put the request
 }	t_request;
 
 // Binary Min-Heap queue for each dongle
@@ -68,6 +69,7 @@ typedef struct s_coder
 	unsigned long	last_cc_t;	// Timestamp of the last compile's start
 	t_dongle		*l_dongle;
 	t_dongle		*r_dongle;
+	bool			is_wake;
 	t_data			*data;
 }	t_coder;
 
@@ -121,12 +123,14 @@ unsigned long	get_wait_time_ms(\
 bool			is_simulation_over(t_data *data);
 bool			log_action(t_coder *coder, char *action);
 bool			coder_sleep(t_coder *coder, unsigned int duration_ms);
+void			wake_coder(t_coder *c);
 
 // Coder compile cycle and dongle operations
 bool			compile_cycle(t_coder *coder);
 void			release_dongle(t_dongle *dongle, unsigned int cooldown_ms);
 bool			acquire_dongles(t_coder *coder, t_dongle *first_dongle,\
 								t_dongle *second_dongle);
+unsigned long	get_key(t_coder *coder);
 
 // Thread routine functions
 void			*c_routine(void *arg);

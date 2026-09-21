@@ -6,28 +6,21 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/18 20:03:50 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 11:58:17 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 13:11:13 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-// Get key: request timestamp (FIFO) or the deadline to burnout (EDF).
-static unsigned long	get_key(t_coder *coder)
-{
-	if (coder->data->scheduler == FIFO)
-		return (get_time_ms());
-	return (coder->last_cc_t + coder->data->burnout_t);
-}
-
 // Coders wait on their cond variable to see
 // if the dongle has become available for them.
 static void	dongles_timed_wait(t_coder *coder,
-	t_dongle *first_dongle, t_dongle *second_dongle,
-	unsigned long timed_wait_ms)
+	t_dongle *first_dongle, t_dongle *second_dongle)
 {
+	unsigned long		timed_wait_ms;
 	struct timespec		ts;
 
+	timed_wait_ms = get_wait_time_ms(first_dongle, second_dongle);
 	clock_gettime(CLOCK_REALTIME, &ts);
 	ts.tv_sec += timed_wait_ms / 1000;
 	ts.tv_nsec += (timed_wait_ms % 1000) * 1000000L;
@@ -50,7 +43,7 @@ void	push_requests(t_coder *coder)
 
 	req.coder_num = coder->coder_num;
 	req.key = get_key(coder);
-	req.cond = &coder->cond;
+	req.coder = coder;
 	pthread_mutex_lock(&coder->l_dongle->mutex);
 	heap_push(&coder->l_dongle->queue, req);
 	pthread_mutex_unlock(&coder->l_dongle->mutex);
@@ -65,12 +58,12 @@ void	push_requests(t_coder *coder)
 bool	acquire_dongles(t_coder *coder,
 	t_dongle *first_dongle, t_dongle *second_dongle)
 {
-	unsigned long	timed_wait_ms;
-
-	timed_wait_ms = 0;
 	push_requests(coder);
 	while (!is_simulation_over(coder->data))
 	{
+		pthread_mutex_lock(&coder->c_mutex);
+		coder->is_wake = false;
+		pthread_mutex_unlock(&coder->c_mutex);
 		pthread_mutex_lock(&first_dongle->mutex);
 		pthread_mutex_lock(&second_dongle->mutex);
 		if (heap_peek(&first_dongle->queue) == coder->coder_num
@@ -83,8 +76,7 @@ bool	acquire_dongles(t_coder *coder,
 			pthread_mutex_unlock(&first_dongle->mutex);
 			break ;
 		}
-		timed_wait_ms = get_wait_time_ms(first_dongle, second_dongle);
-		dongles_timed_wait(coder, first_dongle, second_dongle, timed_wait_ms);
+		dongles_timed_wait(coder, first_dongle, second_dongle);
 	}
 	if (is_simulation_over(coder->data))
 		return (exit_queues(coder, first_dongle, second_dongle), true);
@@ -92,18 +84,18 @@ bool	acquire_dongles(t_coder *coder,
 }
 
 // Update dongle's `in_use` and `free_t` fields,
-// then signal this to the first-in-queue coder.
+// then signal wake coders in the queue.
 void	release_dongle(t_dongle *dongle, unsigned int cooldown_ms)
 {
-	int		i;
-	int		queue_size;
+	short	i;
+	short	queue_size;
 
 	i = -1;
 	pthread_mutex_lock(&dongle->mutex);
 	queue_size = dongle->queue.size;
 	dongle->free_t = get_time_ms() + cooldown_ms;
 	dongle->in_use = false;
-	pthread_mutex_unlock(&dongle->mutex);
 	while (++i < queue_size)
-		pthread_cond_signal(dongle->queue.items[i].cond);
+		wake_coder(dongle->queue.items[i].coder);
+	pthread_mutex_unlock(&dongle->mutex);
 }
