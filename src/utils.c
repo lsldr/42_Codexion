@@ -6,32 +6,11 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/16 19:40:44 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 16:09:53 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 11:46:24 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
-
-// Get current time in milliseconds.
-unsigned long	get_time_ms(void)
-{
-	struct timespec	ts;
-
-	clock_gettime(CLOCK_REALTIME, &ts);
-	return ((unsigned long)ts.tv_sec * 1000 + ts.tv_nsec / 1000000);
-}
-
-// Set start time of the simulation in milliseconds,
-// set coders' initial last compile time at this value.
-void	set_time(t_data *data)
-{
-	int		i;
-
-	i = -1;
-	data->start_t = get_time_ms();
-	while (++i < data->n_coders)
-		data->coders[i].last_cc_t = data->start_t;
-}
 
 // Check if simulation has ended
 bool	is_simulation_over(t_data *data)
@@ -64,7 +43,7 @@ bool	log_action(t_coder *coder, char *action)
 	return (true);
 }
 
-// Sleep for a designated period while checking if simulation ended
+// Sleep for 0.5 milliseconds while checking if simulation ended
 bool	coder_sleep(t_coder *coder, unsigned int duration_ms)
 {
 	unsigned long	deadline;

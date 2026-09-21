@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 17:48:55 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 11:36:28 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ static bool	take_dongles(t_coder *coder)
 	unsigned short	first_dongle_index;
 	unsigned short	second_dongle_index;
 
+	if (!coder->r_dongle)
+		return (handle_single_coder(coder));
 	if (coder->l_dongle->id < coder->r_dongle->id)
 	{
 		first_dongle_index = coder->l_dongle->id - 1;
@@ -43,8 +45,6 @@ static bool	take_dongles(t_coder *coder)
 		first_dongle_index = coder->r_dongle->id - 1;
 		second_dongle_index = coder->l_dongle->id - 1;
 	}
-	if (!coder->r_dongle)
-		return (handle_single_coder(coder));
 	if (acquire_dongles(coder,
 			&coder->data->dongles[first_dongle_index],
 			&coder->data->dongles[second_dongle_index]))
@@ -101,6 +101,8 @@ void	*c_routine(void *arg)
 	coder = (t_coder *)arg;
 	if (coder->data->req_compiles == 0)
 		return (NULL);
+	if ((coder->coder_num & 1) == 0)
+		usleep(500);
 	while (!is_simulation_over(coder->data))
 	{
 		if (compile_cycle(coder))

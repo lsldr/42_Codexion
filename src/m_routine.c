@@ -6,18 +6,23 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 16:19:53 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 11:08:13 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
 // Set is_end=True
-static void	set_end(t_data *data)
+static void	signal_end(t_data *data)
 {
+	int		i;
+
+	i = -1;
 	pthread_mutex_lock(&data->end_mutex);
 	data->is_end = true;
 	pthread_mutex_unlock(&data->end_mutex);
+	while (++i < data->n_coders)
+		pthread_cond_broadcast(&data->coders[i].cond);
 }
 
 // Skip the burnout check for a coder if they met the
@@ -51,7 +56,7 @@ static bool	is_any_burnout(t_data *data)
 		if (now - data->coders[i].last_cc_t > data->burnout_t)
 		{
 			pthread_mutex_unlock(&data->coders[i].c_mutex);
-			set_end(data);
+			signal_end(data);
 			pthread_mutex_lock(&data->log_mutex);
 			printf("%lu %u burned out\n", now - data->start_t,
 				data->coders[i].coder_num);
@@ -95,7 +100,7 @@ void	*m_routine(void *arg)
 		usleep(500);
 		if (data->req_compiles == 0 || are_enough_compiles(data))
 		{
-			set_end(data);
+			signal_end(data);
 			pthread_mutex_lock(&data->log_mutex);
 			printf("Each coder has compiled %u times.\n", data->req_compiles);
 			pthread_mutex_unlock(&data->log_mutex);
@@ -103,7 +108,7 @@ void	*m_routine(void *arg)
 		}
 		if (is_any_burnout(data))
 		{
-			set_end(data);
+			signal_end(data);
 			break ;
 		}
 	}

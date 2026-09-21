@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 17:53:24 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 11:57:43 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,9 +111,13 @@ int				init_threads(t_data *data);
 void			clean_all(t_data *data);
 void			codexion(t_data *data);
 
-// Time and lifecycle utils
+// Time utils
 unsigned long	get_time_ms(void);
 void			set_time(t_data *data);
+unsigned long	get_wait_time_ms(\
+							t_dongle *first_dongle, t_dongle *second_dongle);
+
+// Logging, simulation control, and sleep utils
 bool			is_simulation_over(t_data *data);
 bool			log_action(t_coder *coder, char *action);
 bool			coder_sleep(t_coder *coder, unsigned int duration_ms);
@@ -121,8 +125,8 @@ bool			coder_sleep(t_coder *coder, unsigned int duration_ms);
 // Coder compile cycle and dongle operations
 bool			compile_cycle(t_coder *coder);
 void			release_dongle(t_dongle *dongle, unsigned int cooldown_ms);
-bool			acquire_dongles(t_coder *coder, t_dongle *l_dongle,\
-								t_dongle *r_dongle);
+bool			acquire_dongles(t_coder *coder, t_dongle *first_dongle,\
+								t_dongle *second_dongle);
 
 // Thread routine functions
 void			*c_routine(void *arg);
@@ -134,7 +138,8 @@ t_request		heap_pop(t_pqueue *q);
 unsigned short	heap_peek(t_pqueue *queue);
 void			heap_remove(t_pqueue *q, unsigned short coder_num);
 bool			has_priority(t_request req_a, t_request req_b);
-void			exit_queues(t_coder *coder);
+void			exit_queues(t_coder *coder,\
+							t_dongle *first_dongle, t_dongle *second_dongle);
 void			pop_queues(t_coder *coder);
 
 

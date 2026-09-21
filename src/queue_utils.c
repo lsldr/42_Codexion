@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/19 12:25:15 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/20 17:52:47 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 10:45:53 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,16 +29,15 @@ bool	has_priority(t_request req_a, t_request req_b)
 	return (req_a.coder_num < req_b.coder_num);
 }
 
-void	exit_queues(t_coder *coder)
+void	exit_queues(t_coder *coder,
+	t_dongle *first_dongle, t_dongle *second_dongle)
 {
-	pthread_mutex_lock(&coder->r_dongle->mutex);
-	coder->r_dongle->in_use = false;
-	heap_remove(&coder->r_dongle->queue, coder->coder_num);
-	pthread_mutex_unlock(&coder->r_dongle->mutex);
-	pthread_mutex_lock(&coder->l_dongle->mutex);
-	coder->l_dongle->in_use = false;
-	heap_remove(&coder->l_dongle->queue, coder->coder_num);
-	pthread_mutex_unlock(&coder->l_dongle->mutex);
+	pthread_mutex_lock(&second_dongle->mutex);
+	heap_remove(&second_dongle->queue, coder->coder_num);
+	pthread_mutex_unlock(&second_dongle->mutex);
+	pthread_mutex_lock(&first_dongle->mutex);
+	heap_remove(&first_dongle->queue, coder->coder_num);
+	pthread_mutex_unlock(&first_dongle->mutex);
 }
 
 void	pop_queues(t_coder *coder)

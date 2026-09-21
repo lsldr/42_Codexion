@@ -20,6 +20,7 @@ SRC     := main.c \
 			$(SRC_DIR)/queue_ops.c		\
 			$(SRC_DIR)/queue_utils.c	\
 			$(SRC_DIR)/strto_num.c		\
+			$(SRC_DIR)/time_utils.c		\
 			$(SRC_DIR)/utils.c			\
 
 OBJ     := $(SRC:%.c=$(OBJ_DIR)/%.o)
@@ -48,15 +49,15 @@ fclean: clean
 		@rm -f $(NAME)
 
 asan: fclean
-	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=address -g"
+	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=address -g3"
 	@printf '\nAddressSanitizer is on\n'
 
 tsan: fclean
-	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=thread -g"
+	@$(MAKE) all CFLAGS="$(CFLAGS) -fsanitize=thread -g3"
 	@printf '\nThreadSanitizer is on\n'
 
 valgrind: fclean
-	@$(MAKE) all CFLAGS="$(CFLAGS) -g"
-	@printf '\n-g flag applied\n'
+	@$(MAKE) all CFLAGS="$(CFLAGS) -g3"
+	@printf '\n-g3 flag applied\n'
 
 re: fclean all
