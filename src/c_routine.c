@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/12 16:58:39 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 13:17:11 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 15:49:36 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,7 @@ void	*c_routine(void *arg)
 	t_coder	*coder;
 
 	coder = (t_coder *)arg;
-	if (coder->data->req_compiles == 0)
+	if (coder->data->req_compiles == 0 || coder->data->burnout_t == 0)
 		return (NULL);
 	if ((coder->coder_num & 1) == 0)
 		usleep(500);

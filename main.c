@@ -6,23 +6,11 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:06:26 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/18 21:15:50 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 16:08:23 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "src/codexion.h"
-
-/* void	print_data(t_data *data)
-{
-	printf("%u\n", data->n_coders);
-	printf("%u\n", data->burnout_t);
-	printf("%u\n", data->compile_t);
-	printf("%u\n", data->debug_t);
-	printf("%u\n", data->refactor_t);
-	printf("%u\n", data->req_compiles);
-	printf("%u\n", data->d_cooldown);
-	printf("%d\n", (int)data->scheduler);
-} */
 
 int	main(int argc, char **argv)
 {

@@ -6,7 +6,7 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/15 11:00:28 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 13:16:25 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 15:11:50 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,11 @@ void	*m_routine(void *arg)
 	data = (t_data *)arg;
 	while (true)
 	{
-		usleep(1000);
+		if (is_any_burnout(data))
+		{
+			signal_end(data);
+			break ;
+		}
 		if (data->req_compiles == 0 || are_enough_compiles(data))
 		{
 			signal_end(data);
@@ -106,11 +110,7 @@ void	*m_routine(void *arg)
 			pthread_mutex_unlock(&data->log_mutex);
 			break ;
 		}
-		if (is_any_burnout(data))
-		{
-			signal_end(data);
-			break ;
-		}
+		usleep(1000);
 	}
 	return (NULL);
 }

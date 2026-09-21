@@ -1,6 +1,6 @@
 *This project has been created as part of the 42 curriculum by asuleime.*
 
-# Codexion: Master the race for resources in multi-threaded programming
+# Codexion: Managing shared resources in multi-threaded programming
 
 Codexion is a concurrent systems programming project developed at 42. It models a circular inclusive co-working hub where multiple coder threads compete for shared USB dongles to compile quantum code on a central quantum compiler, debug, and refactor, all while avoiding burnout under strict real-time deadline constraints and fair arbitration policies (FIFO and EDF).
 
@@ -68,7 +68,7 @@ Other than `number_of_coders` and `scheduler`, all arguments are within the 32-b
 - `time_to_compile`: Milliseconds spent compiling (holding two dongles).
 - `time_to_debug`: Milliseconds spent debugging.
 - `time_to_refactor`: Milliseconds spent refactoring.
-- `number_of_compiles_required`: If all coders compile this many times, simulation stops (set to `0` to run until burnout).
+- `number_of_compiles_required`: If all coders compile this many times, simulation stops (when set to `0`, simulation stops right awa).
 - `dongle_cooldown`: Milliseconds a dongle remains unavailable after being released.
 - `scheduler`: Arbitration algorithm (`fifo` or `edf`).
 
@@ -113,6 +113,7 @@ AI assistance was utilized for:
 
 1. **Deadlock Prevention (Coffman's Conditions)**:
    A classic deadlock occurs when all coders attempt to acquire their left dongle and wait for their right dongle (Circular Wait). Codexion breaks the circular wait condition using **Resource Hierarchy**:
+   - coders with even `coder_num` sleep for 0.5 milliseconds at the beginning, which is a scheduling tool used to avoid cyclical coder compilations which can make some coders burn out due to too long of wait, particularly if the number of coders is odd.
    - Each coder determines the lower ID between their left and right dongle (`min(l_dongle->id, r_dongle->id)`) and always requests it first.
    - For coders $1 \dots N-1$, this means acquiring dongle $i$ then $i+1$.
    - For coder $N$, their dongles are $N$ and $1$. Because $1 < N$, coder $N$ requests dongle $1$ first and dongle $N$ second.
@@ -126,11 +127,12 @@ AI assistance was utilized for:
 
 3. **Dongle Cooldown Handling**:
    - When a dongle is released, its `free_t` timestamp is set to `now + dongle_cooldown`.
-   - Waiting coders use `pthread_cond_timedwait` with periodic 5 ms timeouts inside `dongle_wait()`. This ensures that as soon as the cooldown expires, the top-priority waiter re-evaluates `get_time_ms() >= dongle->free_t` and acquires the dongle immediately without requiring manual external signals.
+   - Waiting coders use `pthread_cond_timedwait` with periodic timeouts of 1-5 milliseconds (determined by dongle's free_t - the ts when timed wait is about to start) inside `dongle_wait()`. This ensures that as soon as the cooldown expires, the top-priority waiter re-evaluates `get_time_ms() >= dongle->free_t` and acquires the dongle immediately without requiring manual external signals.
 
 4. **Precise Burnout Detection ($\le 10$ ms)**:
    - A dedicated monitor thread polls all coders every 1 ms (`usleep(1000)`).
-   - Because check intervals are 1 ms, burnouts are detected within 1–2 ms of actual deadline expiration, comfortably satisfying the 10 ms precision requirement.
+   - Because check intervals are 1 ms, burnouts are detected within 1–2 ms of actual deadline expiration, satisfying the 10 ms precision requirement.
+   - When `signal_end()` is triggered either by a burnout or required compiles being achieved by every coder (which is right away if required compiles is 0), `is_end` is set to true and a signal is broadcast to coders.
 
 5. **Log Serialization**:
    - A central `log_mutex` guards all logging calls.
@@ -151,7 +153,7 @@ The implementation relies on POSIX thread primitives (`pthread_mutex_t`, `pthrea
    Protects each dongle's internal state (`in_use`, `free_t`) and its binary min-heap priority queue (`queue`). Any queue insertion (`heap_push`), removal (`heap_pop`, `heap_remove`), or inspection (`heap_peek`) is performed exclusively under this lock.
 
 2. **`pthread_cond_t cond` (per Coder)**:
-   Each coder possesses an individual condition variable. When waiting in a dongle queue, the coder waits on `&coder->cond` while holding the dongle's mutex. When the dongle is released, the releasing thread signals the condition variables of waiting coders.
+   Each coder possesses an individual condition variable. When waiting in a dongle queue, the coder waits on `&coder->cond`. When the dongle is released, the releasing thread signals the condition variables of waiting coders.
 
 3. **`pthread_mutex_t c_mutex` (per Coder)**:
    Protects shared coder state accessed concurrently by the coder and monitor threads:
@@ -163,17 +165,3 @@ The implementation relies on POSIX thread primitives (`pthread_mutex_t`, `pthrea
 
 5. **`pthread_mutex_t log_mutex`**:
    Ensures mutual exclusion for stdout, serializing terminal writes across all threads.
-
-### Note on Helgrind warnings about unheld lock when calling pthread_cond_signal()
-
-This error warning is caused by the use of `pthread_cond_timedwait()` by coders when waiting for a dongle to become available. The Valgrind [docs](https://valgrind.org/docs/manual/hg-manual.html#hg-manual.api-checks) mentions the following:
-
-"Signalling or broadcasting a condition variable when the associated mutex is unlocked is not strictly an error. The resulting thread scheduling may be unpredictable if the mutex is not held. The option --check-cond-signal-mutex=yes|no turns on checking for this situation. This kind of error is categorised as 'dubious'. The check is not turned on by default because some standard C and C++ libraries use condition signals/broadcasts with the associated mutex unlocked."
-
-```bash 
-pthread_cond_{signal,broadcast}: dubious: associated lock is not held from inside pthread_cond_timedwait
-```
-
-Is this helgrind warning.
-
-All stack traces are entirely within glibc, and pthread_cond_timedwait is always called with the dongle mutex held. If a timed wait expires just as another thread's signal reaches it, glibc treats the wait as cancelled but having consumed that signal, and sends a replacement signal so other waiters are not left without a wakeup. That internal call happens while the timing-out thread has released the mutex inside the wait. Helgrind then sees a signal sent while the dongle mutex is held by no thread, or by a different one. The check is advisory, since POSIX permits signalling without holding the mutex. The extra signal can only cause a spurious wakeup, and every wait loop rechecks its predicate (queue head, in_use, free_t, is_end) under the dongle mutex, so correctness is unaffected. Helgrind reports no data races or lock-order violations, and DRD reports nothing.

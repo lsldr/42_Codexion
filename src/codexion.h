@@ -6,20 +6,20 @@
 /*   By: asuleime <asuleime@student.42warsaw.pl>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/09/10 11:15:56 by asuleime          #+#    #+#             */
-/*   Updated: 2026/09/21 13:11:52 by asuleime         ###   ########.fr       */
+/*   Updated: 2026/09/21 15:42:37 by asuleime         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CODEXION_H
 # define CODEXION_H
 
-# include <pthread.h>
-# include <stdbool.h>
-# include <stdio.h>
-# include <stdlib.h>
-# include <string.h>
-# include <time.h>
-# include <unistd.h>
+# include <pthread.h>	// All the POSIX threads functionality
+# include <stdbool.h>	// Used to define boolean type variables
+# include <stdio.h>		// fprintf() and printf() usage
+# include <stdlib.h>	// memset(), malloc(), free()
+# include <string.h>	// strlen()
+# include <time.h>		// clock_gettime()
+# include <unistd.h>	// usleep()
 
 // Scheduling policy: earliest deadline first || first-in-first-out
 typedef enum e_scheduler
@@ -145,6 +145,5 @@ bool			has_priority(t_request req_a, t_request req_b);
 void			exit_queues(t_coder *coder,\
 							t_dongle *first_dongle, t_dongle *second_dongle);
 void			pop_queues(t_coder *coder);
-
 
 #endif
