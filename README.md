@@ -68,7 +68,7 @@ Other than `number_of_coders` and `scheduler`, all arguments are within the 32-b
 - `time_to_compile`: Milliseconds spent compiling (holding two dongles).
 - `time_to_debug`: Milliseconds spent debugging.
 - `time_to_refactor`: Milliseconds spent refactoring.
-- `number_of_compiles_required`: If all coders compile this many times, simulation stops (when set to `0`, simulation stops right awa).
+- `number_of_compiles_required`: If all coders compile this many times, simulation stops (when set to `0`, simulation stops right away).
 - `dongle_cooldown`: Milliseconds a dongle remains unavailable after being released.
 - `scheduler`: Arbitration algorithm (`fifo` or `edf`).
 
@@ -98,14 +98,14 @@ Other than `number_of_coders` and `scheduler`, all arguments are within the 32-b
 
 ### Description of AI Usage
 AI assistance was utilized for:
-- Code audits against 42 Norm (v4.1) constraints.
+- Code audits against 42 Norm (v. 4.1) constraints.
 - Explainig how AddressSanitizer, DRD, and Helgrind work and what they check.
 - Diagnosing subtle data races flagged by Valgrind DRD.
 - Helping understand the 4 Coffman conditions in the context of Codexion.
-- Drafting this README's headers for sections and links in the table of contents'.
+- Drafting this README's headers for sections and links in the table of contents.
 - Adding log messages for makefile commands.
-- Explaining the helgrind warnings and adjusting sleep times for the threads.
-- Generating bash commands to do multi-run tests on burnouts.
+- Explaining the Helgrind warnings and adjusting sleep times for the threads.
+- Generating bash commands to do multi-run tests with different arguments.
 
 ---
 
@@ -113,8 +113,8 @@ AI assistance was utilized for:
 
 1. **Deadlock Prevention (Coffman's Conditions)**:
    A classic deadlock occurs when all coders attempt to acquire their left dongle and wait for their right dongle (Circular Wait). Codexion breaks the circular wait condition using **Resource Hierarchy**:
-   - coders with even `coder_num` sleep for 0.5 milliseconds at the beginning, which is a scheduling tool used to avoid cyclical coder compilations which can make some coders burn out due to too long of wait, particularly if the number of coders is odd.
-   - Each coder determines the lower ID between their left and right dongle (`min(l_dongle->id, r_dongle->id)`) and always requests it first.
+   - coders with even `coder_num` sleep for 0.5 milliseconds at the beginning, which is a scheduling tool used to avoid cyclical coder compilations which can make some coders burn out due to too prolonged wait, particularly if the number of coders is odd and 1 USB dongle may be left idle at length.
+   - Each coder determines the lower ID between their left and right dongle and always requests it first.
    - For coders $1 \dots N-1$, this means acquiring dongle $i$ then $i+1$.
    - For coder $N$, their dongles are $N$ and $1$. Because $1 < N$, coder $N$ requests dongle $1$ first and dongle $N$ second.
    - This strict total ordering guarantees that no circular chain of dependency can ever form.
@@ -127,11 +127,11 @@ AI assistance was utilized for:
 
 3. **Dongle Cooldown Handling**:
    - When a dongle is released, its `free_t` timestamp is set to `now + dongle_cooldown`.
-   - Waiting coders use `pthread_cond_timedwait` with periodic timeouts of 1-5 milliseconds (determined by dongle's free_t - the ts when timed wait is about to start) inside `dongle_wait()`. This ensures that as soon as the cooldown expires, the top-priority waiter re-evaluates `get_time_ms() >= dongle->free_t` and acquires the dongle immediately without requiring manual external signals.
+   - Waiting coders use `pthread_cond_timedwait()` with periodic timeouts of 1-5 milliseconds (depending on dongle's free_t right before each call of timed wait) inside `dongle_wait()`. This ensures that as soon as the cooldown expires, the top-priority waiter re-evaluates `get_time_ms() >= dongle->free_t` and acquires the dongle immediately without requiring manual external signals.
 
 4. **Precise Burnout Detection ($\le 10$ ms)**:
    - A dedicated monitor thread polls all coders every 1 ms (`usleep(1000)`).
-   - Because check intervals are 1 ms, burnouts are detected within 1–2 ms of actual deadline expiration, satisfying the 10 ms precision requirement.
+   - Because check intervals are 1 ms, burnouts are detected within 1–3 ms of actual deadline expiration, satisfying the 10 ms precision requirement.
    - When `signal_end()` is triggered either by a burnout or required compiles being achieved by every coder (which is right away if required compiles is 0), `is_end` is set to true and a signal is broadcast to coders.
 
 5. **Log Serialization**:
